@@ -425,13 +425,13 @@ namespace x
 			if (false == a_info_.Make(fmt_info_.fmt_ctx))
 				return false;
 
-			if (false == a_info_.SetReSample(AV_CH_LAYOUT_STEREO, AVSampleFormat::AV_SAMPLE_FMT_S16, 48000))
+			if (false == a_info_.SetReSample(AV_CH_LAYOUT_STEREO, AVSampleFormat::AV_SAMPLE_FMT_S16, 44100))
 				return false;
 
 			if (false == v_info_.Make(fmt_info_.fmt_ctx))
 				return false;
 
-			if (false == v_info_.SetScale(1280,720))
+			if (false == v_info_.SetScale())
 				return false;
 
 			return true;

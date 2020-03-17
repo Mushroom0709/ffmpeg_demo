@@ -190,7 +190,7 @@ void xPlayer::AudioFrame(AVPacket* _pkt, AVFrame* _frame, uint8_t* _buf, int _le
 
 bool xPlayer::init_sdl_audio()
 {
-    wanted_spec.freq = 48000;
+    wanted_spec.freq = 44100;
     wanted_spec.format = AUDIO_S16SYS;
     wanted_spec.channels = 2;
     wanted_spec.silence = 0;
@@ -277,6 +277,9 @@ void xPlayer::sdl_event_maker()
     SDL_Event event = { 0 };
     event.type = X_SDL_EVENT_VIDEO;
     int wait_time = (int)(1000.0 / ff_helper_.ImgFrameRate());
+
+    SDL_PauseAudio(0);
+
     while (run_flag_)
     {
         int x = SDL_PushEvent(&event);
@@ -341,8 +344,6 @@ bool xPlayer::Start(const char* _file)
 
     //refresh_thread = SDL_CreateThread(sdl_video_event_maker, "sdl_video_event_maker", this);
 
-    SDL_PauseAudio(0);
-
     return true;
 }
 void xPlayer::SDLEventProcess()
@@ -382,7 +383,7 @@ void xPlayer::SDLEventProcess()
 
             if (data != NULL)
             {
-                printf("[VIDEO] [%ld]\n", data->pts);
+                //printf("[VIDEO] [%ld]\n", data->pts);
                 //SDL_UpdateTexture(sdl_txture, NULL, data->img_data[0], data->linesize[0]);
                 SDL_UpdateYUVTexture(sdl_txture, NULL,
                     data->img_data[0], data->linesize[0],

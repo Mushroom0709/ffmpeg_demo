@@ -3,7 +3,7 @@
 int main(int argc, char* argv[])
 {
     xPlayer player;
-    if (false == player.Start("hh.mp4"))
+    if (false == player.Start("hxy.mp4"))
         return -1;
 
     player.SDLEventProcess();
