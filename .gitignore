@@ -1,8 +1,9 @@
-# Fortran module files
-*.mod
-*.smod
 
-# Executables
 *.exe
-*.out
-*.app
+*.ipch
+*.VC.db
+/.vs
+/Debug
+/Release
+/video_player/Debug
+/video_player/Release

@@ -70,6 +70,11 @@ namespace x
 
 		xVideoInfo::xVideoInfo()
 		{
+			rate_of_stream = -1.0;
+			pts_coefficient = -1.0;
+			duration_of_stream = -1.0;
+
+
 			dec_ctx = NULL;
 			dec = NULL;
 			sws_ctx = NULL;
@@ -141,6 +146,11 @@ namespace x
 			if (stream_indexs.size() <= 0)
 				return false;
 
+			rate_of_stream = av_q2d(av_guess_frame_rate(fmt_ctx, fmt_ctx->streams[GetStreamIndex()], NULL));
+
+			pts_coefficient = av_q2d(fmt_ctx->streams[GetStreamIndex()]->time_base);
+			duration_of_stream = fmt_ctx->streams[GetStreamIndex()]->duration * pts_coefficient;
+
 			dec_ctx = avcodec_alloc_context3(NULL);
 			avcodec_parameters_to_context(dec_ctx, fmt_ctx->streams[GetStreamIndex()]->codecpar);
 			dec = avcodec_find_decoder(dec_ctx->codec_id);
@@ -198,6 +208,11 @@ namespace x
 
 		xAudioInfo::xAudioInfo()
 		{
+			rate_of_stream = -1.0;
+			pts_coefficient = -1.0;
+			duration_of_stream = -1.0;
+
+
 			dec_ctx = NULL;
 			dec = NULL;
 			swr_ctx = NULL;
@@ -256,6 +271,13 @@ namespace x
 			if (stream_indexs.size() <= 0)
 				return false;
 
+			AVStream* temp = fmt_ctx->streams[GetStreamIndex()];
+
+			//rate_of_stream = av_q2d(av_guess_frame_rate(fmt_ctx, fmt_ctx->streams[GetStreamIndex()], NULL));
+
+			pts_coefficient = av_q2d(fmt_ctx->streams[GetStreamIndex()]->time_base);
+			duration_of_stream = fmt_ctx->streams[GetStreamIndex()]->duration * pts_coefficient;
+
 			dec_ctx = avcodec_alloc_context3(NULL);
 			avcodec_parameters_to_context(dec_ctx, fmt_ctx->streams[GetStreamIndex()]->codecpar);
 			dec = avcodec_find_decoder(dec_ctx->codec_id);
@@ -301,9 +323,15 @@ namespace x
 
 
 
-		bool xHelper::block_video_read()
+		bool xHelper::block_video_read(bool is_over = false)
 		{
-			int ret = avcodec_send_packet(v_info_.dec_ctx, fmt_info_.av_pkt);
+			int ret = 0;
+			//if (is_over == false)
+			//	ret = avcodec_send_packet(v_info_.dec_ctx, fmt_info_.av_pkt);
+			//else
+			//	ret = avcodec_send_packet(v_info_.dec_ctx, NULL);
+
+			ret = avcodec_send_packet(v_info_.dec_ctx, fmt_info_.av_pkt);
 			if (ret < 0)
 			{
 				return false;
@@ -321,6 +349,8 @@ namespace x
 					return false;
 				}
 
+				//printf("[PKT:%lld]\t[FRAME:%lld]\n", fmt_info_.av_pkt->pts, v_info_.src_frame->pts);
+
 				sws_scale(
 					v_info_.sws_ctx,
 					(const uint8_t* const*)v_info_.src_frame->data,
@@ -336,6 +366,9 @@ namespace x
 				//	_frame->img_src->width,
 				//	_frame->img_src->height);
 
+				v_info_.dst_frame->pts = v_info_.src_frame->pts;
+				v_info_.dst_frame->best_effort_timestamp = v_info_.src_frame->best_effort_timestamp;
+
 				if (x_event != NULL)
 				{
 					x_event->VideoFrame(fmt_info_.av_pkt, v_info_.dst_frame, v_info_.sws_w, v_info_.sws_h, v_info_.sws_fmt);
@@ -344,9 +377,15 @@ namespace x
 
 			return false;
 		}
-		bool xHelper::block_audio_read()
+		bool xHelper::block_audio_read(bool is_over = false)
 		{
-			int ret = avcodec_send_packet(a_info_.dec_ctx, fmt_info_.av_pkt);
+			int ret = 0;
+			//if(is_over == false)
+			//	ret = avcodec_send_packet(a_info_.dec_ctx, fmt_info_.av_pkt);
+			//else
+			//	ret = avcodec_send_packet(a_info_.dec_ctx, NULL);
+
+			ret = avcodec_send_packet(a_info_.dec_ctx, fmt_info_.av_pkt);
 			if (ret < 0)
 			{
 				return false;
@@ -425,7 +464,7 @@ namespace x
 			if (false == a_info_.Make(fmt_info_.fmt_ctx))
 				return false;
 
-			if (false == a_info_.SetReSample(AV_CH_LAYOUT_STEREO, AVSampleFormat::AV_SAMPLE_FMT_S16, 44100))
+			if (false == a_info_.SetReSample(AV_CH_LAYOUT_STEREO, AVSampleFormat::AV_SAMPLE_FMT_S16, a_info_.dec_ctx->sample_rate))
 				return false;
 
 			if (false == v_info_.Make(fmt_info_.fmt_ctx))
@@ -442,7 +481,7 @@ namespace x
 			int ret = 0;
 
 			av_packet_unref(fmt_info_.av_pkt);
-			if (av_read_frame(fmt_info_.fmt_ctx, fmt_info_.av_pkt) >= 0)
+			if (ret = av_read_frame(fmt_info_.fmt_ctx, fmt_info_.av_pkt), ret >= 0)
 			{
 				if (fmt_info_.av_pkt->stream_index == v_info_.GetStreamIndex())
 				{
@@ -450,9 +489,18 @@ namespace x
 				}
 				else if (fmt_info_.av_pkt->stream_index == a_info_.GetStreamIndex())
 				{
-					block_audio_read();
+					return block_audio_read();
 				}
 				return true;
+			}
+			else
+			{
+				if (ret == AVERROR_EOF)
+				{
+					block_video_read(true);
+					block_audio_read(true);
+					return false;
+				}
 			}
 
 			return false;
@@ -465,19 +513,17 @@ namespace x
 			fmt_info_.Destroy();
 		}
 
-		int xHelper::ImgWdith()
+		xFormatInfo& xHelper::FormatInfo()
 		{
-			return v_info_.sws_w;
+			return fmt_info_;
 		}
-		int xHelper::ImgHeight()
+		xAudioInfo& xHelper::AudioInfo()
 		{
-			return v_info_.sws_h;
+			return a_info_;
 		}
-
-		double xHelper::ImgFrameRate()
+		xVideoInfo& xHelper::VideoInfo()
 		{
-			return (fmt_info_.fmt_ctx->streams[v_info_.GetStreamIndex()]->avg_frame_rate.num * 1.0) /
-				(fmt_info_.fmt_ctx->streams[v_info_.GetStreamIndex()]->avg_frame_rate.den * 1.0);
+			return v_info_;
 		}
 	}
 }

@@ -13,6 +13,7 @@ extern "C"
 #include <libswresample\swresample.h>
 #include <libavutil\imgutils.h>
 #include <libavutil\pixdesc.h>
+#include <libavutil\time.h>
 }
 
 namespace x
@@ -43,6 +44,11 @@ namespace x
 			AVFrame* src_frame;
 			AVFrame* dst_frame;
 			uint8_t* dst_buf;
+
+			double rate_of_stream;
+			double duration_of_stream;
+
+			double pts_coefficient;
 		public:
 			SwsContext* sws_ctx;
 			int sws_w;
@@ -66,6 +72,10 @@ namespace x
 			AVCodec* dec;
 
 			AVFrame* src_frame;
+
+			double rate_of_stream;
+			double pts_coefficient;
+			double duration_of_stream;
 		public:
 			SwrContext* swr_ctx;
 
@@ -98,8 +108,8 @@ namespace x
 		private:
 			xEvent* x_event;
 		private:
-			bool block_video_read();
-			bool block_audio_read();
+			bool block_video_read(bool is_over);
+			bool block_audio_read(bool is_over);
 		public:
 			xHelper();
 			~xHelper();
@@ -110,9 +120,9 @@ namespace x
 
 			void Close();
 		public:
-			int ImgWdith();
-			int ImgHeight();
-			double ImgFrameRate();
+			xVideoInfo& VideoInfo();
+			xAudioInfo& AudioInfo();
+			xFormatInfo& FormatInfo();
 		};
     }
 }

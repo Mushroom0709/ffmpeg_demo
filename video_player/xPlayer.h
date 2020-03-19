@@ -1,6 +1,8 @@
 #ifndef _X_HELPER_H_
 #define _X_HELPER_H_
 
+#include <math.h>
+
 extern "C"
 {
 #include <SDL.h>
@@ -17,6 +19,8 @@ extern "C"
 
 #define X_SDL_EVENT_VIDEO (SDL_USEREVENT + 1)
 #define X_SDL_EVENT_AUDIO (SDL_USEREVENT + 2)
+
+#define X_QUEUE_MAX_SIZE 512
 
 #ifndef X_IMG_DEFINE
 #define X_IMG_DEFINE
@@ -36,8 +40,9 @@ extern "C"
 typedef class VData
 {
 public:
+    double dpts;
+    double duration;
     int64_t pts;
-    int64_t dts;
 
     int linesize[X_IMG_CHANNEL_NUM];
     int img_data_len[X_IMG_CHANNEL_NUM];
@@ -48,14 +53,13 @@ public:
 public:
     void Clear();
     void InitYUV422(AVPacket* _pkt, AVFrame* _frame, int _w, int _h);
-public:
-    bool operator() (VData* a, VData* b);
 }*PtrVData;
 typedef class AData
 {
 public:
+    double dpts;
+    double duration;
     int64_t pts;
-    int64_t dts;
 
     uint8_t* buffer;
     int length;
@@ -65,8 +69,6 @@ public:
 public:
     void Clear();
     void InitPCM(AVPacket* _pkt, AVFrame* _frame, uint8_t* _buf, int _len);
-public:
-    bool operator() (AData* a, AData* b);
 }*PtrAData;
 
 void sdl_audio_callback(void* userdata, Uint8* stream, int len);
@@ -74,6 +76,10 @@ void sdl_audio_callback(void* userdata, Uint8* stream, int len);
 class xPlayer :
     public x::xFFmpeg::xEvent
 {
+public:
+    volatile bool is_frist_audio_;
+    volatile double audio_start_clock_;
+    volatile double audio_clock_;
 private:
     SDL_AudioSpec wanted_spec;
 
@@ -94,11 +100,9 @@ private:
 
     volatile bool run_flag_;
 private:
-    //std::priority_queue<PtrVData, std::vector<PtrVData>, VData> qvideo_;
     std::queue<PtrVData> qvideo_;
     std::mutex qvideo_lock_;
 
-    //std::priority_queue<PtrAData, std::vector<PtrAData>, AData> qaudio_;
     std::queue<PtrAData> qaudio_;
     std::mutex qaudio_lock_;
 private:
@@ -110,18 +114,22 @@ private:
     bool init_sdl_all();
     void close_sdl_all();
 private:
-    void sdl_event_maker();
+    void sdl_video_function();
+    void sdl_show_yuv420(PtrVData _data);
+    double calculate_video_delay(PtrVData _now_data, PtrVData _next_data);
     void ff_decode_function();
+private:
+
 public:
     xPlayer();
     ~xPlayer();
 public:
     PtrAData GetAudioData();
+    PtrVData GetVideoData();
 public:
     bool Start(const char* _file);
     void SDLEventProcess();
     bool Status();
-    bool ImgFrameRate();
     void Stop();
 };
 
