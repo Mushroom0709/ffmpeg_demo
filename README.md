@@ -8,7 +8,7 @@
 + 控制台第一列是当前视频帧和上一视帧的实际间隔(秒)，第二列是视频时钟和音频时钟(pts)的修正值。
 
 ### 图示
-+ ![运行截图](http://huahua.qn.xlvfan.com/show.png)
+![运行截图](http://huahua.qn.xlvfan.com/show.png)
 
 ### 吐槽
 + 下视频测试的时候使用了优酷客户端，然后自动转
