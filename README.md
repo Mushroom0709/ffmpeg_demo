@@ -5,7 +5,6 @@
 ### 使用说明
 + 请使用VS2019打开并切换到debug & x86 下编译运行(不出意外f5即可一键启动)。
 
-<<<<<<< HEAD
 ### 技术说明
 + FFmepg解码流程图
     ![FFmepg解码流程图](http://huahua.qn.xlvfan.com/ffmpeg_paly_video_file_ffmepg%E8%A7%A3%E7%A0%81%E6%B5%81%E7%A8%8B.png)
@@ -114,19 +113,9 @@
   ```
 
 ### 视频演示
-    <video id="video" controls="" preload="none" poster="http://huahua.qn.xlvfan.com/ffmpeg_paly_video_file_img.png">
-        <source id="mp4" src="http://huahua.qn.xlvfan.com/ffmpeg_paly_video_file_show.mp4" type="video/mp4">
-    </video>
-
-### 参考及答谢
-+ 百度百科
-+ [雷神(雷霄骅)](https://blog.csdn.net/leixiaohua1020/category_1360795.html)
-+ [叶余](https://www.cnblogs.com/leisure_chn/p/10284653.html)
-+ [ffempg Documentation](http://ffmpeg.org/doxygen/4.1/index.html)
-=======
-### 图示
-![运行截图](http://huahua.qn.xlvfan.com/show.png)
->>>>>>> 7b5b0c3da526baa7c53eb1ded67d8b651f8ed657
+<video id="video" controls="" preload="none" poster="http://huahua.qn.xlvfan.com/ffmpeg_paly_video_file_img.png">
+    <source id="mp4" src="http://huahua.qn.xlvfan.com/ffmpeg_paly_video_file_show.mp4" type="video/mp4">
+</video>
 
 ### 吐槽
 + 下视频测试的时候使用了优酷客户端，然后自动转
