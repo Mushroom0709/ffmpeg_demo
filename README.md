@@ -113,9 +113,13 @@
   ```
 
 ### 视频演示
-<video id="video" controls="" preload="none" poster="http://huahua.qn.xlvfan.com/ffmpeg_paly_video_file_img.png">
-    <source id="mp4" src="http://huahua.qn.xlvfan.com/ffmpeg_paly_video_file_show.mp4" type="video/mp4">
-</video>
+[单机演示](http://huahua.qn.xlvfan.com/ffmpeg_paly_video_file_show.mp4)
+
+### 参考及答谢
++ 百度百科
++ [雷神(雷霄骅)](https://blog.csdn.net/leixiaohua1020/category_1360795.html)
++ [叶余](https://www.cnblogs.com/leisure_chn/p/10284653.html)
++ [ffempg Documentation](http://ffmpeg.org/doxygen/4.1/index.html)
 
 ### 吐槽
 + 下视频测试的时候使用了优酷客户端，然后自动转
