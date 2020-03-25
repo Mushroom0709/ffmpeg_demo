@@ -6,6 +6,7 @@
 #include <chrono>
 #include <mutex>
 
+// ffmepg是纯C库，在C++编译器下需要指定C语法编译
 extern "C"
 {
 #include <libavcodec\avcodec.h>
@@ -24,12 +25,14 @@ extern "C"
 
 #define X_FRAME_MAX_CHANNEL 8
 
-#define X_AVSYNC_MAX_DELAY 0.08
-#define X_AVSYNC_MIN_DELAY 0.001
-#define X_AVSYNC_DYNAMIC_COEFFICIENT 0.00816
-#define X_AVSYNC_DYNAMIC_THRESHOLD 0.001
+#define X_AVSYNC_DYNAMIC_COEFFICIENT 0.0160119  // 动态帧率算法的系数 解方程 (1+x)^6 = 1.1 即
+                                                // 在相差时间(ffmepg时间) 为 6位数的时候，控制
+                                                // 帧率的延时会在标准延时下增加或减少相差时间的
+                                                // (1.1-1)倍
+
+#define X_AVSYNC_DYNAMIC_THRESHOLD 0.003        // 音视频同步动态帧率进行干预的二者当前时间差的阈值
 
 #define X_AVSYNC_SKIP_FRAME -0x1001
-#define X_AVSYNC_NOT_DELAY -0x1002
+//#define X_AVSYNC_NOT_DELAY -0x1002
 
 #endif //_X_FFMPEG_COMMON_H_

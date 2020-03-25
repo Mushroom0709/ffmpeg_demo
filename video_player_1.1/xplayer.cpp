@@ -17,6 +17,7 @@ void sdl_audio_callback(void* userdata, Uint8* stream, int len)
     }
     else
     {
+        //如果没有声音缓冲，则静音
         SDL_memset(stream, 0, len);
     }
 }
@@ -130,7 +131,16 @@ void xPlayer::play_video_function()
             SDL_RenderCopy(s_render, s_txture, NULL, &s_rect_);
 
             delay = av_sync_.CalDelay(frame->dpts);
-            std::this_thread::sleep_for(std::chrono::microseconds(delay));
+            if (delay > 0)
+            {
+                std::this_thread::sleep_for(std::chrono::microseconds(delay));
+
+                //std::this_thread::sleep_for(std::chrono::microseconds(delay+rand()%40000)); //用作音视频同步测试
+            }
+            else if (X_AVSYNC_SKIP_FRAME == delay)
+            {
+                //
+            }
 
             //printf("%I64d\n", delay);
 
@@ -146,6 +156,7 @@ void xPlayer::play_video_function()
         }
     }
 }
+
 bool xPlayer::open_ffmepg(const char* _inpu)
 {
     int w = 0, h = 0;
@@ -187,7 +198,7 @@ bool xPlayer::open_ffmepg(const char* _inpu)
     if (false == adec_.Start(this))
         return false;
 
-    av_sync_.SetAverageDelay(1.0 / vdec_.GetRate());
+    //av_sync_.SetAverageDelay(1.0 / vdec_.GetRate());
 
     return true;
 }
@@ -248,7 +259,7 @@ bool xPlayer::open_sdl2()
     s_aspec_.silence = 0;
     s_aspec_.samples = _nb_samples;
     s_aspec_.userdata = this;
-    s_aspec_.callback = sdl_audio_callback;
+    s_aspec_.callback = sdl_audio_callback;//此函数会在需要填入新的缓冲数据时由SDL2回调
 
     if (SDL_OpenAudio(&s_aspec_, NULL) < 0)
     {

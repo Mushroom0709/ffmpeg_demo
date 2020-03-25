@@ -18,6 +18,7 @@ namespace x
 			virtual void AudioEvent(uint8_t* _buf, int _len, int64_t _pts, x::ffmpeg::xAudioDecoder* _decoder) = 0;
 		};
 
+		// ½âÂëÆ÷½Ó¿Ú
 		class xDecoder
 		{
 		protected:

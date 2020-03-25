@@ -57,6 +57,10 @@ namespace x
 			if (run_flag_ == true)
 				return false;
 
+			// ffmepg4.x 弃用了 av_register_all
+
+			// 下面都是基本流程，点开function看注释就行
+
 			av_fmt_ctx_ = avformat_alloc_context();
 			if (!av_fmt_ctx_)return false;
 
@@ -68,6 +72,8 @@ namespace x
 
 			for (size_t i = 0; i < av_fmt_ctx_->nb_streams; i++)
 			{
+				// ffmpeg4.x 弃用了 AVFormatContext::streams::codec 改用 AVFormatContext::streams::codecpar
+				// 一般来说一个码流只复用一个视频流 和 音频流,但是不排除特殊情况下有其他封装
 				if (AVMEDIA_TYPE_VIDEO == av_fmt_ctx_->streams[i]->codecpar->codec_type &&
 					vs_index_ == X_INT_INDEX_NONE)
 				{
