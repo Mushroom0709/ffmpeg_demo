@@ -113,7 +113,7 @@
   ```
 
 ### 视频演示
-[单机演示](http://huahua.qn.xlvfan.com/ffmpeg_paly_video_file_show.mp4)
+[单击演示](http://huahua.qn.xlvfan.com/ffmpeg_paly_video_file_show.mp4)
 
 ### 参考及答谢
 + 百度百科
