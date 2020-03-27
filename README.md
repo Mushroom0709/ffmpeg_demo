@@ -10,7 +10,8 @@
     ![FFmepg解码流程图](http://huahua.qn.xlvfan.com/ffmpeg_paly_video_file_ffmepg%E8%A7%A3%E7%A0%81%E6%B5%81%E7%A8%8B.png)
 
 + 代码逻辑图
-    ![代码逻辑图](http://huahua.qn.xlvfan.com/ffmpeg_paly_video_file_%E4%BB%A3%E7%A0%81%E9%80%BB%E8%BE%91%E5%9B%BE.jpg)
+    [点击查看大图](http://huahua.qn.xlvfan.com/ffmepg_video_player_file_ffmpeg_paly_video_file_%E4%BB%A3%E7%A0%81%E9%80%BB%E8%BE%91%E5%9B%BE_2.jpg)
+    ![代码逻辑图](http://huahua.qn.xlvfan.com/ffmepg_video_player_file_ffmpeg_paly_video_file_%E4%BB%A3%E7%A0%81%E9%80%BB%E8%BE%91%E5%9B%BE_2.jpg)
   
 + 音视频同步算法
   ```
@@ -116,7 +117,7 @@
 [单击演示](http://huahua.qn.xlvfan.com/ffmpeg_paly_video_file_show.mp4)
 
 ### 参考及答谢
-+ 百度百科
++ [百度百科](https://baike.baidu.com/)
 + [雷神(雷霄骅)](https://blog.csdn.net/leixiaohua1020/category_1360795.html)
 + [叶余](https://www.cnblogs.com/leisure_chn/p/10284653.html)
 + [ffempg Documentation](http://ffmpeg.org/doxygen/4.1/index.html)
