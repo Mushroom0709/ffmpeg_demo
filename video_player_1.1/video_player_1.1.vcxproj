@@ -171,9 +171,6 @@ XCOPY $(SolutionDir)third_party_library\SDL2-2.0.10\lib\x86\*.dll $(OutDir) /y</
     <ClInclude Include="x_ffmpeg_video_decoder.h" />
     <ClInclude Include="x_safe_queue.h" />
   </ItemGroup>
-  <ItemGroup>
-    <None Include="ClassDiagram1.cd" />
-  </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
   </ImportGroup>

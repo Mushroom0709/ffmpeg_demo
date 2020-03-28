@@ -5,6 +5,13 @@
 ### 使用说明
 + 请使用VS2019打开并切换到debug & x86 下编译运行(不出意外f5即可一键启动)。
 
+### 其他版本
++ 控制台(Windows console) [点击下载项目](http://huahua.qn.xlvfan.com/ffmpeg_video_player_console_project.rar)
+
+### 视频演示
++ [SDL2显示 单击查看视频](http://huahua.qn.xlvfan.com/ffmpeg_paly_video_file_show.mp4)
++ [控制台(Windows console)显示 单击查看视频](http://huahua.qn.xlvfan.com/ffmpeg_video_player_console_show.mp4)
+
 ### 技术说明
 + FFmepg解码流程图
     ![FFmepg解码流程图](http://huahua.qn.xlvfan.com/ffmpeg_paly_video_file_ffmepg%E8%A7%A3%E7%A0%81%E6%B5%81%E7%A8%8B.png)
@@ -112,9 +119,6 @@
       }
     }
   ```
-
-### 视频演示
-[单击演示](http://huahua.qn.xlvfan.com/ffmpeg_paly_video_file_show.mp4)
 
 ### 参考及答谢
 + [百度百科](https://baike.baidu.com/)
