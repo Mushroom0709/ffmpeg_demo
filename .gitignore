@@ -1,0 +1,8 @@
+*.exe
+*.ipch
+*.VC.db
+*.log
+*.tlog
+.vs
+Debug
+Release
