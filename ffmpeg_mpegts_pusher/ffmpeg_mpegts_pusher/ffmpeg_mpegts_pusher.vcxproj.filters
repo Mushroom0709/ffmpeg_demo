@@ -18,10 +18,10 @@
     <ClCompile Include="ffmpeg_mpegts_pusher.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
-    <ClCompile Include="x_target_process.cpp">
+    <ClCompile Include="x_input_stream.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
-    <ClCompile Include="x_source_process.cpp">
+    <ClCompile Include="x_output_stream.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
   </ItemGroup>
@@ -29,10 +29,13 @@
     <ClInclude Include="x_common.h">
       <Filter>头文件</Filter>
     </ClInclude>
-    <ClInclude Include="x_source_process.h">
+    <ClInclude Include="x_input_stream.h">
       <Filter>头文件</Filter>
     </ClInclude>
-    <ClInclude Include="x_target_process.h">
+    <ClInclude Include="x_stream_info.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="x_output_stream.h">
       <Filter>头文件</Filter>
     </ClInclude>
   </ItemGroup>

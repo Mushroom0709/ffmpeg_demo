@@ -160,13 +160,14 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="ffmpeg_mpegts_pusher.cpp" />
-    <ClCompile Include="x_source_process.cpp" />
-    <ClCompile Include="x_target_process.cpp" />
+    <ClCompile Include="x_input_stream.cpp" />
+    <ClCompile Include="x_output_stream.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="x_source_process.h" />
+    <ClInclude Include="x_input_stream.h" />
+    <ClInclude Include="x_output_stream.h" />
     <ClInclude Include="x_common.h" />
-    <ClInclude Include="x_target_process.h" />
+    <ClInclude Include="x_stream_info.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
