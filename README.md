@@ -9,7 +9,7 @@
 
 2.  推流
     1.  udp推流
-        1.  [udp + mpegts 发送mp4或屏幕流](https://github.com/Mushroom0709/ffmpeg_demo/ffmpeg_mpegts_pusher)
+        1.  [udp + mpegts 发送mp4或屏幕流](https://github.com/Mushroom0709/ffmpeg_demo/tree/master/ffmpeg_mpegts_pusher)
 
 
 ###### @xMushroom
