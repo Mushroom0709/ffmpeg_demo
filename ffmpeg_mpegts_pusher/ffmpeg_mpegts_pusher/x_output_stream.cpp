@@ -42,10 +42,10 @@ void xOutputStream::Destroy()
         avcodec_close(st_info.second.CodecCtx);
         avcodec_free_context(&(st_info.second.CodecCtx));
 
-        if (st_info.second.BSFCtx != NULL)
-        {
-            av_bsf_free(&st_info.second.BSFCtx);
-        }
+        //if (st_info.second.BSFCtx != NULL)
+        //{
+        //    av_bsf_free(&st_info.second.BSFCtx);
+        //}
 
         if (st_info.second.SwrCtx != NULL)
         {
@@ -93,6 +93,8 @@ bool xOutputStream::create_stream(xInStreamInfo& _in_info, xOutStreamInfo& _out_
         _out_info.CodecCtx->sample_aspect_ratio = _in_info.CodecCtx->sample_aspect_ratio;
         _out_info.CodecCtx->framerate = _in_info.CodecCtx->framerate;
         _out_info.CodecCtx->time_base = av_inv_q(_in_info.CodecCtx->framerate);
+        _out_info.CodecCtx->max_b_frames = 0;
+        _out_info.Stream->time_base = _out_info.CodecCtx->time_base;
 
         _out_info.CodecCtx->gop_size = _in_info.CodecCtx->gop_size;
         _out_info.CodecCtx->pix_fmt = AV_PIX_FMT_YUV420P;
@@ -103,14 +105,15 @@ bool xOutputStream::create_stream(xInStreamInfo& _in_info, xOutStreamInfo& _out_
     {
         _out_info.CodecCtx->sample_fmt = _out_info.Codec->sample_fmts ? _out_info.Codec->sample_fmts[0] : AV_SAMPLE_FMT_FLTP;
         //_cdc_ctx->bit_rate = 64000;
-        _out_info.CodecCtx->sample_rate = 44100;
+        _out_info.CodecCtx->sample_rate = _in_info.CodecCtx->sample_rate;
+        //_out_info.CodecCtx->sample_rate = 22050;
         //if (_out_info.Codec->supported_samplerates)
         //{
         //    _out_info.CodecCtx->sample_rate = _out_info.Codec->supported_samplerates[0];
         //    for (int i = 0; _out_info.Codec->supported_samplerates[i]; i++)
         //    {
-        //        if (_out_info.Codec->supported_samplerates[i] == 44100)
-        //            _out_info.CodecCtx->sample_rate = 44100;
+        //        if (_out_info.Codec->supported_samplerates[i] == 22050)
+        //            _out_info.CodecCtx->sample_rate = 22050;
         //    }
         //}
         _out_info.CodecCtx->channel_layout = AV_CH_LAYOUT_STEREO;
@@ -125,15 +128,13 @@ bool xOutputStream::create_stream(xInStreamInfo& _in_info, xOutStreamInfo& _out_
         //}
         _out_info.CodecCtx->channels = av_get_channel_layout_nb_channels(_out_info.CodecCtx->channel_layout);
         _out_info.CodecCtx->time_base = { 1, _out_info.CodecCtx->sample_rate };
-        _out_info.Stream->time_base = _out_info.CodecCtx->time_base;
+        //_out_info.Stream->time_base = _out_info.CodecCtx->time_base;
         _out_info.CodecCtx->strict_std_compliance = FF_COMPLIANCE_EXPERIMENTAL;
     }
 
     default:
         break;
     }
-
-    _out_info.Stream->time_base = _out_info.CodecCtx->time_base;
 
     if (fmt_ctx_->oformat->flags & AVFMT_GLOBALHEADER)
         _out_info.CodecCtx->flags |= AV_CODEC_FLAG_GLOBAL_HEADER;
@@ -185,6 +186,7 @@ bool xOutputStream::SetParameters(std::map<int, xInStreamInfo> _in_st, bool _dum
             out_st.Frame->channels = av_get_channel_layout_nb_channels(out_st.CodecCtx->channel_layout);
             out_st.Frame->channel_layout = out_st.CodecCtx->channel_layout;
             out_st.Frame->nb_samples = out_st.Swr_nb_samples; //一帧音频一通道的采用数量
+            out_st.Frame->sample_rate = out_st.CodecCtx->sample_rate;
             if (0 != av_frame_get_buffer(out_st.Frame, 0))
                 return false;
 
@@ -261,7 +263,7 @@ bool xOutputStream::WriteFrame(xInStreamInfo& _in_info)
         auto& out_info = find_res->second;
 
         AVPacket* out_pkt = av_packet_alloc();
-        av_init_packet(out_pkt);
+        //av_init_packet(out_pkt);
 
         if (out_info.MediaType == AVMEDIA_TYPE_VIDEO)
         {
@@ -291,45 +293,14 @@ bool xOutputStream::WriteFrame(xInStreamInfo& _in_info)
                 av_packet_rescale_ts(out_pkt, _in_info.Stream->time_base, out_info.Stream->time_base);
                 out_pkt->stream_index = out_info.StreamIndex;
 
-                //if (out_info.StreamIndex == clock_stream_index_)
-                //{
-                //    if (last_pts_ < -0.1)
-                //    {
-                //        last_pts_ = out_pkt->pts * av_q2d(out_info.Stream->time_base);
-                //    }
-                //    else
-                //    {
-                //        double dpts = out_pkt->pts * av_q2d(out_info.Stream->time_base);
-                //        double theory_wait = dpts - last_pts_;
-
-                //        double now_time = av_gettime_relative() / (AV_TIME_BASE * 1.0);
-                //        double fact_wait = now_time - last_update_time_;
-
-                //        double delay = theory_wait - fact_wait;
-                //        last_pts_ = dpts;
-                //        if (delay > MIN_SLEEP_TIME_D_MICROSECOND)
-                //        {
-                //            printf("%lf\n", delay);
-                //            av_usleep(static_cast<unsigned int>(delay * 1000000.0));
-                //        }
-                //    }
-                //}
-
                 if (0 != av_interleaved_write_frame(fmt_ctx_, out_pkt))
                 {
                     ERROR_PRINTLN("write video frame fail");
                 }
-
-                //if (out_info.StreamIndex == clock_stream_index_)
-                //    last_update_time_ = av_gettime_relative() / (AV_TIME_BASE * 1.0);
             }
             else
             {
-                if (ret == AVERROR(EAGAIN) || ret == AVERROR_EOF)
-                {
-                    //
-                }
-                else
+                if (!(ret == AVERROR(EAGAIN) || ret == AVERROR_EOF))
                 {
                     char error_buf[AV_ERROR_MAX_STRING_SIZE] = { 0 };
                     ERROR_PRINTLN("%s", av_make_error_string(error_buf, 4096, ret));
@@ -343,8 +314,9 @@ bool xOutputStream::WriteFrame(xInStreamInfo& _in_info)
                 (uint8_t **)&out_info.Frame->data[0], out_info.Frame->nb_samples,
                 (const uint8_t**)&_in_info.Frame->data[0], _in_info.Frame->nb_samples);
             
-            out_info.Frame->pts = _in_info.Frame->best_effort_timestamp;
-            out_info.PtsCnt += av_rescale_q(out_info.Frame->nb_samples, _in_info.Stream->time_base, out_info.Stream->time_base);
+
+            out_info.Frame->pts = av_rescale_q(_in_info.Frame->best_effort_timestamp, _in_info.CodecCtx->time_base, out_info.CodecCtx->time_base);
+            //out_info.Frame->pts = av_rescale_q(_in_info.Frame->best_effort_timestamp, _in_info.CodecCtx->time_base, out_info.CodecCtx->time_base);
 
             ret = avcodec_send_frame(out_info.CodecCtx, out_info.Frame);
             if (ret < 0)

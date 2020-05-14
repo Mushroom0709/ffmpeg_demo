@@ -12,6 +12,7 @@ extern "C"
 #include <libavdevice\avdevice.h>
 #include <libavformat\avformat.h>
 #include <libavutil\avutil.h>
+#include <libavutil\audio_fifo.h>
 #include <libswscale\swscale.h>
 #include <libswresample\swresample.h>
 #include <libavutil\imgutils.h>

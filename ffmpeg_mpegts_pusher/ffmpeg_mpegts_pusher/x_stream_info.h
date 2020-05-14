@@ -35,11 +35,9 @@ class xOutStreamInfo :
 	public xStreamInfo
 {
 public:
-	AVBSFContext* BSFCtx;
 	SwsContext* SwsCtx;
 	SwrContext* SwrCtx;
 
-	AVFrame* Frame;
 	uint8_t* FrameBuffer;
 
 	int Swr_nb_samples;
@@ -51,11 +49,9 @@ public:
 	{
 		SwsCtx = NULL;
 		SwrCtx = NULL;
-		Frame = NULL;
 		FrameBuffer = NULL;
 		Swr_nb_samples = 0;
 		PtsCnt = 0;
-		BSFCtx = NULL;
 	}
 };
 

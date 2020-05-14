@@ -46,8 +46,14 @@ bool xInputStream::OpenScreen(bool _dump_flg)
     AVInputFormat* iformat = av_find_input_format("gdigrab");
     if (iformat == NULL) return false;
 
-    if (0 != avformat_open_input(&fmt_ctx_, "desktop", iformat, NULL))
+    char video_size[128];
+    sprintf_s(video_size, "%dx%d", 1920, 1080);
+
+    AVDictionary* options = NULL;
+    av_dict_set(&options, "framerate", "24", 0);//Ö¡ÂÊµ÷Õû
+    if (0 != avformat_open_input(&fmt_ctx_, "desktop", iformat, &options))
         return false;
+    av_dict_free(&options);
 
     if (true == _dump_flg)
         av_dump_format(fmt_ctx_, 0, NULL, 0);
