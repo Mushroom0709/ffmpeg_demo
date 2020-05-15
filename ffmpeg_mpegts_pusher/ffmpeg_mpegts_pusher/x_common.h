@@ -19,7 +19,7 @@ extern "C"
 #include <libavutil\pixdesc.h>
 #include <libavutil\time.h>
 }
-#define MIN_SLEEP_TIME_D_MICROSECOND 0.0001
+#define MIN_SLEEP_TIME_D_MICROSECOND 0.01
 #define ERROR_PRINTLN(_FMT_,...) printf("[ERROR] ["##_FMT_##"]\n",__VA_ARGS__)
 #define INFO_PRINTLN(_FMT_,...) printf("[INFO] ["##_FMT_##"]\n",__VA_ARGS__)
 

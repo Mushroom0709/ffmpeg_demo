@@ -46,9 +46,6 @@ bool xInputStream::OpenScreen(bool _dump_flg)
     AVInputFormat* iformat = av_find_input_format("gdigrab");
     if (iformat == NULL) return false;
 
-    char video_size[128];
-    sprintf_s(video_size, "%dx%d", 1920, 1080);
-
     AVDictionary* options = NULL;
     av_dict_set(&options, "framerate", "24", 0);//Ö¡ÂÊµ÷Õû
     if (0 != avformat_open_input(&fmt_ctx_, "desktop", iformat, &options))
@@ -227,6 +224,7 @@ bool xInputStream::block_read_frame(AVPacket* _pkt, xInStreamInfo& _in_st, xOutp
             //        _in_st.Frame->width,
             //        _in_st.Frame->height);
             //}
+            //INFO_PRINTLN("get source frame:%ld ms", clock() - _in_st.start_time);
             _output->WriteFrame(_in_st);
         }
     }
@@ -243,6 +241,7 @@ void xInputStream::BlockRead(xOutputStream* _output)
     if (false == _output->WriteHeader())
     {
         ERROR_PRINTLN("write header fail");
+        return;
     }
 
     while (run_flag)
@@ -270,5 +269,6 @@ void xInputStream::BlockRead(xOutputStream* _output)
     if (false == _output->WriteTrailer())
     {
         ERROR_PRINTLN("write trailer fail");
+        return;
     }
 }

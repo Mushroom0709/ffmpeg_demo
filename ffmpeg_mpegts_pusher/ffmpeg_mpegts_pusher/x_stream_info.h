@@ -28,7 +28,11 @@ public:
 class xInStreamInfo :
 	public xStreamInfo
 {
-
+public:
+	xInStreamInfo()
+	{
+		//
+	}
 };
 
 class xOutStreamInfo :

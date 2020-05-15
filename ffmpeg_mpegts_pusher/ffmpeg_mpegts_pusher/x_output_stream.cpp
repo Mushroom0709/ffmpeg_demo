@@ -20,14 +20,42 @@ xOutputStream::~xOutputStream()
 bool xOutputStream::Initialization(const char* _url)
 {
     url_ = _url;
-    if (0 > avformat_alloc_output_context2(&fmt_ctx_, NULL, "mpegts", _url))
+
+    if (url_.find_first_of("udp") == 0)
     {
-        ERROR_PRINTLN("new output fail");
+        if (0 > avformat_alloc_output_context2(&fmt_ctx_, NULL, "mpegts", _url))
+        {
+            ERROR_PRINTLN("new output fail");
+            return false;
+        }
+
+        if (fmt_ctx_ == NULL)
+            return false;
+    }
+    //else if (url_.find_first_of("rtsp") == 0)
+    //{
+    //    if (0 > avformat_alloc_output_context2(&fmt_ctx_, NULL, "rtsp", _url))
+    //    {
+    //        ERROR_PRINTLN("new output fail");
+    //        return false;
+    //    }
+    //    if (fmt_ctx_ == NULL)
+    //        return false;
+    //}
+    //else if (url_.find_first_of("rtmp") == 0)
+    //{
+    //    if (0 > avformat_alloc_output_context2(&fmt_ctx_, NULL, "flv", _url))
+    //    {
+    //        ERROR_PRINTLN("new output fail");
+    //        return false;
+    //    }
+    //    if (fmt_ctx_ == NULL)
+    //        return false;
+    //}
+    else
+    {
         return false;
     }
-
-    if (fmt_ctx_ == NULL)
-        return false;
 
     return true;
 }
@@ -93,10 +121,11 @@ bool xOutputStream::create_stream(xInStreamInfo& _in_info, xOutStreamInfo& _out_
         _out_info.CodecCtx->sample_aspect_ratio = _in_info.CodecCtx->sample_aspect_ratio;
         _out_info.CodecCtx->framerate = _in_info.CodecCtx->framerate;
         _out_info.CodecCtx->time_base = av_inv_q(_in_info.CodecCtx->framerate);
-        _out_info.CodecCtx->max_b_frames = 0;
-        _out_info.Stream->time_base = _out_info.CodecCtx->time_base;
-
         _out_info.CodecCtx->gop_size = _in_info.CodecCtx->gop_size;
+        _out_info.Stream->time_base = _out_info.CodecCtx->time_base;
+        //av_opt_set(_out_info.CodecCtx->priv_data, "preset", "ultrafast", 0);
+        _out_info.CodecCtx->flags |= AV_CODEC_FLAG_GLOBAL_HEADER;
+
         _out_info.CodecCtx->pix_fmt = AV_PIX_FMT_YUV420P;
     }
     break;
@@ -135,9 +164,6 @@ bool xOutputStream::create_stream(xInStreamInfo& _in_info, xOutStreamInfo& _out_
     default:
         break;
     }
-
-    if (fmt_ctx_->oformat->flags & AVFMT_GLOBALHEADER)
-        _out_info.CodecCtx->flags |= AV_CODEC_FLAG_GLOBAL_HEADER;
 
     if (0 != avcodec_open2(_out_info.CodecCtx, _out_info.Codec, NULL))
         return false;
@@ -229,10 +255,24 @@ bool xOutputStream::SetParameters(std::map<int, xInStreamInfo> _in_st, bool _dum
         }
     }
 
-    if ((fmt_ctx_->flags & AVFMT_NOFILE) != AVFMT_NOFILE)
+    if (!(fmt_ctx_->flags & AVFMT_NOFILE))
     {
-        if (0 > avio_open(&fmt_ctx_->pb, url_.c_str(), AVIO_FLAG_WRITE))
+        int ret = avio_open(&fmt_ctx_->pb, url_.c_str(), AVIO_FLAG_WRITE);
+        if (0 > ret)
+        {
+            char error_buf[AV_ERROR_MAX_STRING_SIZE] = { 0 };
+            ERROR_PRINTLN("%s", av_make_error_string(error_buf, 4096, ret));
             return false;
+        }
+
+        //if (url_.find_first_of("rtp") == 0)
+        //{
+        //    char sdp_str[2048] = { 0 };
+        //    if (0 == av_sdp_create(&fmt_ctx_, 1, sdp_str, sizeof(sdp_str)))
+        //    {
+        //        printf("\n%s\n", sdp_str);
+        //    }
+        //}
     }
 
     if (true == _dump_flg)
@@ -297,15 +337,26 @@ bool xOutputStream::WriteFrame(xInStreamInfo& _in_info)
                 {
                     ERROR_PRINTLN("write video frame fail");
                 }
+
+                //INFO_PRINTLN("av_interleaved_write_frame:%ld ms", clock() - _in_info.start_time);
             }
             else
             {
-                if (!(ret == AVERROR(EAGAIN) || ret == AVERROR_EOF))
+                if (got_packet == AVERROR(EAGAIN))
+                {
+                   /* ret = avcodec_send_frame(out_info.CodecCtx, NULL);
+                    if (ret < 0)
+                    {
+                        return false;
+                    }*/
+                }
+                else
                 {
                     char error_buf[AV_ERROR_MAX_STRING_SIZE] = { 0 };
-                    ERROR_PRINTLN("%s", av_make_error_string(error_buf, 4096, ret));
+                    ERROR_PRINTLN("%s", av_make_error_string(error_buf, 4096, got_packet));
                 }
             }
+           
         }
         else if (out_info.MediaType == AVMEDIA_TYPE_AUDIO)
         {
@@ -316,7 +367,6 @@ bool xOutputStream::WriteFrame(xInStreamInfo& _in_info)
             
 
             out_info.Frame->pts = av_rescale_q(_in_info.Frame->best_effort_timestamp, _in_info.CodecCtx->time_base, out_info.CodecCtx->time_base);
-            //out_info.Frame->pts = av_rescale_q(_in_info.Frame->best_effort_timestamp, _in_info.CodecCtx->time_base, out_info.CodecCtx->time_base);
 
             ret = avcodec_send_frame(out_info.CodecCtx, out_info.Frame);
             if (ret < 0)
@@ -344,12 +394,17 @@ bool xOutputStream::WriteFrame(xInStreamInfo& _in_info)
                         double now_time = av_gettime_relative() / (AV_TIME_BASE * 1.0);
                         double fact_wait = now_time - last_update_time_;
 
-                        double delay = (theory_wait - fact_wait) * 0.95;
+                        double delay = (theory_wait - fact_wait);
                         last_pts_ = dpts;
                         if (delay > MIN_SLEEP_TIME_D_MICROSECOND)
                         {
                             printf("%lf\n", delay);
+                            delay *= 0.70;
                             av_usleep(static_cast<unsigned int>(delay * 1000000.0));
+                        }
+                        else if (delay < (-1 * 0.0001))
+                        {
+                            printf("%lf\n", delay);
                         }
                     }
                 }
