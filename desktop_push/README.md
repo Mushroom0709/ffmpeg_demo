@@ -9,6 +9,6 @@
 ### 技术说明
 1.  在本地回环推流测试,分辨率:1920*1200,帧率:18~24fps,关键帧间距:1~6.带宽3~5Mbps,延时172ms左右(包括采集，转码，传输，解码，显示)。
 2.  设计的是1VS多推流，目前控制部分还未做好，拉流端启动立即开始拉流(即部分参数是硬代码)。余下功能会继续迭代。
-3.  libx264编译请参阅[在Windows10下基于VS2019和MSYS2编译libx264](https://github.com/Mushroom0709/ffmpeg_demo/tree/master/ffmpeg_mpegts_pusher/third_party_library/WIN编译libx264.md)
+3.  libx264编译请参阅[在Windows10下基于VS2019和MSYS2编译libx264](https://github.com/Mushroom0709/ffmpeg_demo/blob/master/third_party_library/WIN%E7%BC%96%E8%AF%91libx264.md)
 
 ###### @xMushroom

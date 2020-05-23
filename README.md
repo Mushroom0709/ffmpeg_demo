@@ -17,5 +17,5 @@
         3.  [拉流](https://github.com/Mushroom0709/ffmpeg_demo/tree/master/desktop_pull)
 
 3.  教程
-    1.  [在Windows10下基于VS2019和MSYS2编译libx264](https://github.com/Mushroom0709/ffmpeg_demo/tree/master/ffmpeg_mpegts_pusher/third_party_library/WIN编译libx264.md)
+    1.  [在Windows10下基于VS2019和MSYS2编译libx264](https://github.com/Mushroom0709/ffmpeg_demo/blob/master/third_party_library/WIN%E7%BC%96%E8%AF%91libx264.md)
 ###### @xMushroom
