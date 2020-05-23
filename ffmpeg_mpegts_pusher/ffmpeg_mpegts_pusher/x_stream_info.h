@@ -46,7 +46,8 @@ public:
 
 	int Swr_nb_samples;
 
-	int64_t PtsCnt;
+	double pkt_size_sum;
+	clock_t last_time;
 public:
 	xOutStreamInfo():
 		xStreamInfo()
@@ -55,7 +56,9 @@ public:
 		SwrCtx = NULL;
 		FrameBuffer = NULL;
 		Swr_nb_samples = 0;
-		PtsCnt = 0;
+
+		pkt_size_sum = 0.0;
+		last_time = 0;
 	}
 };
 

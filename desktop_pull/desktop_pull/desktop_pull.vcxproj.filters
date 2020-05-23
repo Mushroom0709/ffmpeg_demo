@@ -1,0 +1,81 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="源文件">
+      <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
+      <Extensions>cpp;c;cc;cxx;c++;def;odl;idl;hpj;bat;asm;asmx</Extensions>
+    </Filter>
+    <Filter Include="头文件">
+      <UniqueIdentifier>{93995380-89BD-4b04-88EB-625FBE52EBFB}</UniqueIdentifier>
+      <Extensions>h;hh;hpp;hxx;h++;hm;inl;inc;ipp;xsd</Extensions>
+    </Filter>
+    <Filter Include="资源文件">
+      <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
+      <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
+    </Filter>
+    <Filter Include="头文件\x_ffmpeg">
+      <UniqueIdentifier>{424fd972-c376-4c4b-bf68-5453132524e4}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="头文件\x_message">
+      <UniqueIdentifier>{634f754a-8afd-4ee6-bd6c-b90bdbe03d2a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="头文件\x_socket">
+      <UniqueIdentifier>{a77596a8-0efe-45ef-9364-085afc1e905d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="源文件\x_socket">
+      <UniqueIdentifier>{c92c6e47-5d03-483e-b0ef-b3812dd2b9e1}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="源文件\x_ffmpeg">
+      <UniqueIdentifier>{7605248b-c33b-4a1e-959d-f56f4867b1f7}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="desktop_pull.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="x_socket_tcp_client.cpp">
+      <Filter>源文件\x_socket</Filter>
+    </ClCompile>
+    <ClCompile Include="x_ffmpeg_decoder.cpp">
+      <Filter>源文件\x_ffmpeg</Filter>
+    </ClCompile>
+    <ClCompile Include="work_center.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="x_message_control.h">
+      <Filter>头文件\x_message</Filter>
+    </ClInclude>
+    <ClInclude Include="x_message_interface.h">
+      <Filter>头文件\x_message</Filter>
+    </ClInclude>
+    <ClInclude Include="x_message_pkt.h">
+      <Filter>头文件\x_message</Filter>
+    </ClInclude>
+    <ClInclude Include="x_message_protocol.h">
+      <Filter>头文件\x_message</Filter>
+    </ClInclude>
+    <ClInclude Include="x_message_serialize.h">
+      <Filter>头文件\x_message</Filter>
+    </ClInclude>
+    <ClInclude Include="x_message_unpacker.h">
+      <Filter>头文件\x_message</Filter>
+    </ClInclude>
+    <ClInclude Include="x_ffmpeg_common.h">
+      <Filter>头文件\x_ffmpeg</Filter>
+    </ClInclude>
+    <ClInclude Include="x_socket_tcp_client.h">
+      <Filter>头文件\x_socket</Filter>
+    </ClInclude>
+    <ClInclude Include="x_ffmpeg_decoder.h">
+      <Filter>头文件\x_ffmpeg</Filter>
+    </ClInclude>
+    <ClInclude Include="x_message_x264_frame.h">
+      <Filter>头文件\x_message</Filter>
+    </ClInclude>
+    <ClInclude Include="work_center.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+  </ItemGroup>
+</Project>

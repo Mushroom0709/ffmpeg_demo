@@ -123,7 +123,8 @@ bool xOutputStream::create_stream(xInStreamInfo& _in_info, xOutStreamInfo& _out_
         _out_info.CodecCtx->time_base = av_inv_q(_in_info.CodecCtx->framerate);
         _out_info.CodecCtx->gop_size = _in_info.CodecCtx->gop_size;
         _out_info.Stream->time_base = _out_info.CodecCtx->time_base;
-        //av_opt_set(_out_info.CodecCtx->priv_data, "preset", "ultrafast", 0);
+        //av_opt_set(_out_info.CodecCtx->priv_data, "preset", "veryfast", 0);//ultrafast/veryfast、faster、fast、medium、slow
+        //av_opt_set(_out_info.CodecCtx->priv_data, "tune", "zerolatency", 0);
         _out_info.CodecCtx->flags |= AV_CODEC_FLAG_GLOBAL_HEADER;
 
         _out_info.CodecCtx->pix_fmt = AV_PIX_FMT_YUV420P;
@@ -176,8 +177,6 @@ bool xOutputStream::create_stream(xInStreamInfo& _in_info, xOutStreamInfo& _out_
 
 bool xOutputStream::SetParameters(std::map<int, xInStreamInfo> _in_st, bool _dump_flg)
 {
-
-
     for (auto in_st : _in_st)
     {
         if (in_st.second.MediaType == AVMEDIA_TYPE_AUDIO)
@@ -333,10 +332,29 @@ bool xOutputStream::WriteFrame(xInStreamInfo& _in_info)
                 av_packet_rescale_ts(out_pkt, _in_info.Stream->time_base, out_info.Stream->time_base);
                 out_pkt->stream_index = out_info.StreamIndex;
 
+                if (out_info.last_time == 0)
+                {
+                    out_info.last_time = clock();
+                }
+                else
+                {
+                    double diff = (clock() * 1.0 - out_info.last_time * 1.0) / 1000.0;
+
+                    if (diff > 1.0)
+                    {
+                        INFO_PRINTLN("%lf Mbps", out_info.pkt_size_sum / diff * 8.0);
+                        out_info.last_time = clock();
+                        out_info.pkt_size_sum = 0;
+                    }
+                }
+
+                out_info.pkt_size_sum += out_pkt->size / 1024.0 / 1024.0;
+
                 if (0 != av_interleaved_write_frame(fmt_ctx_, out_pkt))
                 {
                     ERROR_PRINTLN("write video frame fail");
                 }
+
 
                 //INFO_PRINTLN("av_interleaved_write_frame:%ld ms", clock() - _in_info.start_time);
             }

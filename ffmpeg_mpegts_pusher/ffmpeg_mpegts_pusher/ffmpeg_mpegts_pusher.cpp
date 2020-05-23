@@ -9,11 +9,11 @@ int main()
     avformat_network_init();
     avdevice_register_all();
 
-    if (false == input.OpenFile("../../test_video/失眠飞行.mp4", true))
-        return -1;
-
-    //if (false == input.OpenScreen(true))
+    //if (false == input.OpenFile("../../test_video/失眠飞行.mp4", true))
     //    return -1;
+
+    if (false == input.OpenScreen(true))
+        return -1;
 
 
     if (false == output.Initialization("udp://239.0.0.1:50101"))
@@ -30,5 +30,7 @@ int main()
     return 0;
 }
 
+//ffplay -x 1280 -y 720 -i udp://239.0.0.1:50101
 //ffplay -x 1280 -y 720 -i udp://239.0.0.1:50101 -sync audio //用来播放视频
 //ffplay -x 1280 -y 720 -i udp://239.0.0.1:50101 //用来播放桌面
+//ffmpeg -f gdigrab -i desktop -vcodec libx264 -preset faster -f mpegts udp://239.0.0.1:50101
