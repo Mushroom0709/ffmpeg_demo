@@ -138,6 +138,7 @@ XCOPY $(SolutionDir)..\third_party_library\SDL2-2.0.10\lib\x86\*.dll $(OutDir) /
       <OptimizeReferences>true</OptimizeReferences>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <AdditionalDependencies>avcodec.lib;avdevice.lib;avfilter.lib;avformat.lib;avutil.lib;postproc.lib;swresample.lib;swscale.lib;SDL2.lib;SDL2main.lib;ws2_32.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalOptions>/SAFESEH:NO %(AdditionalOptions)</AdditionalOptions>
     </Link>
     <PreBuildEvent>
       <Command>XCOPY $(SolutionDir)..\third_party_library\ffmpeg-4.2.2-win32\bin\*.dll $(OutDir) /y

@@ -136,6 +136,7 @@ XCOPY $(SolutionDir)..\third_party_library\libx264-160\bin\*.dll $(OutDir) /y</C
       <OptimizeReferences>true</OptimizeReferences>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <AdditionalDependencies>avcodec.lib;avdevice.lib;avfilter.lib;avformat.lib;avutil.lib;postproc.lib;swresample.lib;swscale.lib;libx264.lib;ws2_32.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalOptions>/SAFESEH:NO %(AdditionalOptions)</AdditionalOptions>
     </Link>
     <PreBuildEvent>
       <Command>XCOPY $(SolutionDir)..\third_party_library\ffmpeg-4.2.2-win32\bin\*.dll $(OutDir) /y
