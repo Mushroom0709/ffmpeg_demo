@@ -171,9 +171,7 @@ XCOPY $(SolutionDir)..\third_party_library\libx264-160\bin\*.dll $(OutDir) /y</C
   <ItemGroup>
     <ClInclude Include="work_center.h" />
     <ClInclude Include="x_message_control.h" />
-    <ClInclude Include="x_message_vframe.h" />
     <ClInclude Include="x_message_interface.h" />
-    <ClInclude Include="x_message_pkt.h" />
     <ClInclude Include="x_ffmpeg_common.h" />
     <ClInclude Include="x_ffmpeg_screen_process.h" />
     <ClInclude Include="x_message_protocol.h" />

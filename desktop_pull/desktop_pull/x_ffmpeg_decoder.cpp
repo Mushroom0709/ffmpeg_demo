@@ -13,6 +13,8 @@ namespace xM
 			cdc_parser_ctx_ = NULL;
 			packet_ = NULL;
 			event_ = NULL;
+			src_width_ = 0;
+			src_height_ = 0;
 		}
 		VDecoder::~VDecoder()
 		{
@@ -70,15 +72,18 @@ namespace xM
 			return true;
 		}
 
-		bool VDecoder::Open(IVDecoderEvent* _event)
+		bool VDecoder::Open(IVDecoderEvent* _event,int _src_w,int _src_h)
 		{
 			if (_event == NULL)
 				return false;
+
+			src_width_ = _src_w;
+			src_height_ = _src_h;
 			event_ = _event;
 			if (false == init_decode(AV_CODEC_ID_H264))
 				return false;
 
-			if (false == init_sws(X_FFMEPG_SCREEN_DST_WIDTH, X_FFMEPG_SCREEN_DST_HEIGHT, AV_PIX_FMT_YUV420P,
+			if (false == init_sws(_src_w, _src_h, AV_PIX_FMT_YUV420P,
 				X_FFMPEG_VDECODER_DST_WIDTH, X_FFMPEG_VDECODER_DST_HEIGHT, AV_PIX_FMT_YUV420P))
 				return false;
 

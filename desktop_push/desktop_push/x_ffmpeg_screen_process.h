@@ -5,9 +5,6 @@
 
 #include "x_ffmpeg_common.h"
 
-#define X_FFMEPG_SCREEN_DST_WIDTH 1920
-#define X_FFMEPG_SCREEN_DST_HEIGHT 1200
-
 namespace xM
 {
     namespace ffmepg
@@ -16,7 +13,6 @@ namespace xM
         {
         public:
             virtual void HeaderInfo(int _pix_width, int _pix_height) {};
-            virtual void PacketData(AVPacket* _packet) {};
             virtual void FrametData(AVFrame* _frame) {};
             virtual void x264NalData(x264_nal_t* _nal,int _nal_num) {};
         }*PtrScreenEvent;

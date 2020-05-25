@@ -2,6 +2,7 @@
 #define _X_MESSAGE_SERIALIZE_H_
 
 #include <inttypes.h>
+#include <string.h>
 
 #define X_MESSAGE_BIG_ENDIAN_FLAG 0x01
 #define X_MESSAGE_LITTLE_ENDIAN_FLAG 0x00

@@ -56,9 +56,6 @@
     <ClInclude Include="x_socket_udp_helper.h">
       <Filter>头文件\x_socket</Filter>
     </ClInclude>
-    <ClInclude Include="x_message_pkt.h">
-      <Filter>头文件\x_message</Filter>
-    </ClInclude>
     <ClInclude Include="x_message_control.h">
       <Filter>头文件\x_message</Filter>
     </ClInclude>
@@ -76,9 +73,6 @@
     </ClInclude>
     <ClInclude Include="x_socket_tcp_server.h">
       <Filter>头文件\x_socket</Filter>
-    </ClInclude>
-    <ClInclude Include="x_message_vframe.h">
-      <Filter>头文件\x_message</Filter>
     </ClInclude>
     <ClInclude Include="x_message_x264_frame.h">
       <Filter>头文件\x_message</Filter>

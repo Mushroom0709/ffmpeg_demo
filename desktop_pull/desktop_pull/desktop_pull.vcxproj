@@ -175,7 +175,6 @@ XCOPY $(SolutionDir)..\third_party_library\SDL2-2.0.10\lib\x86\*.dll $(OutDir) /
     <ClInclude Include="x_ffmpeg_decoder.h" />
     <ClInclude Include="x_message_control.h" />
     <ClInclude Include="x_message_interface.h" />
-    <ClInclude Include="x_message_pkt.h" />
     <ClInclude Include="x_message_protocol.h" />
     <ClInclude Include="x_message_serialize.h" />
     <ClInclude Include="x_message_unpacker.h" />

@@ -40,7 +40,7 @@ namespace xM
 				//
 			}
 		public:
-			bool Encode(Communication* sock_)
+			bool Encode(Communication* sock_, uint32_t _id = ~0, bool _all_flag = true)
 			{
 				int len = 0;
 				int offset = 0;
@@ -61,15 +61,20 @@ namespace xM
 					return false;
 				len += offset;
 
-				if (false == sock_->ProtocolSend(buffer, len))
+				if (_all_flag == true && false == sock_->ProtocolSendAll(buffer, len))
+					return false;
+				else if (_all_flag == false && false == sock_->ProtocolSend(_id, buffer, len))
 					return false;
 
-				if (false == Msg.Encode<Communication>(sock_))
+				if (false == Msg.Encode<Communication>(sock_, _id, _all_flag))
 					return false;
 
 				if (offset = Serialize::IntegerConvertToBytes<uint16_t>(X_MESSAGE_PROTOCOL_TAILER, buffer), offset == 0)
 					return false;
-				if (false == sock_->ProtocolSend(buffer, len))
+
+				if (_all_flag == true && false == sock_->ProtocolSendAll(buffer, offset))
+					return false;
+				else if (_all_flag == false && false == sock_->ProtocolSend(_id, buffer, offset))
 					return false;
 
 				return true;

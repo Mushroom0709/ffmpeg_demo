@@ -10,7 +10,8 @@ namespace xM
 		class ICommunication
 		{
 		public:
-			virtual bool ProtocolSend(const uint8_t* _buf, const int _len) { return false; }
+			virtual bool ProtocolSendAll(const uint8_t* _buf, const int _len) { return false; }
+			virtual bool ProtocolSend(uint32_t _id, const uint8_t* _buf, const int _len) { return false; }
 		};
 
 		class IMessage
@@ -18,7 +19,7 @@ namespace xM
 		public:
 			virtual bool Decode(const uint8_t* _buf, const int _len) { return false; }
 			template<class Communication = ICommunication>
-			bool Encode(Communication* _sock) { return false; }
+			bool Encode(Communication* _sock, uint32_t _id, bool _all_flag) { return false; }
 			virtual uint32_t GetLength() { return 0; }
 		};
 	}

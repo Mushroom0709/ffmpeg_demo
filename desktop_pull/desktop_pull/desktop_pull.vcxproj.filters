@@ -50,9 +50,6 @@
     <ClInclude Include="x_message_interface.h">
       <Filter>头文件\x_message</Filter>
     </ClInclude>
-    <ClInclude Include="x_message_pkt.h">
-      <Filter>头文件\x_message</Filter>
-    </ClInclude>
     <ClInclude Include="x_message_protocol.h">
       <Filter>头文件\x_message</Filter>
     </ClInclude>

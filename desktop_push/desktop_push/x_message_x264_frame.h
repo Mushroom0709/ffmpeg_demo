@@ -68,22 +68,21 @@ namespace xM
             }
 
             template<class Communication = ICommunication>
-            bool Encode(Communication* _sock)
+            bool Encode(Communication* _sock, uint32_t _id, bool _all_flag)
             {
                 int len = 0;
                 int offset = 0;
                 uint8_t buffer[32] = { 0 };
 
-                //if (offset = Serialize::IntegerConvertToBytes<uint8_t>(channel_, buffer + len), offset == 0)
-                //    return false;
-                //len += offset;
-
                 if (offset = Serialize::IntegerConvertToBytes<int32_t>(group_size, buffer), offset == 0)
                     return false;
                 len += offset;
-                
-                if (false == _sock->ProtocolSend(buffer, offset))
+
+                if (_all_flag == true && false == _sock->ProtocolSendAll(buffer, offset))
                     return false;
+                else if (_all_flag == false && false == _sock->ProtocolSend(_id, buffer, offset))
+                    return false;
+
 
                 for (int32_t i = 0; i < group_size; i++)
                 {
@@ -91,14 +90,20 @@ namespace xM
                         return false;
                     len += offset;
 
-                    if (false == _sock->ProtocolSend(buffer, offset))
+
+                    if (_all_flag == true && false == _sock->ProtocolSendAll(buffer, offset))
+                        return false;
+                    else if (_all_flag == false && false == _sock->ProtocolSend(_id, buffer, offset))
                         return false;
                 }
 
                 for (int32_t i = 0; i < group_size; i++)
                 {
-                    if (false == _sock->ProtocolSend(p_payload[i], i_payload[i]))
+                    if (_all_flag == true && false == _sock->ProtocolSendAll(p_payload[i], i_payload[i]))
                         return false;
+                    else if (_all_flag == false && false == _sock->ProtocolSend(_id, p_payload[i], i_payload[i]))
+                        return false;
+
                     len += i_payload[i];
                 }
 

@@ -89,14 +89,16 @@ namespace xM
             ptr_out_pic_ = (x264_picture_t*)calloc(1, sizeof(x264_picture_t));
 
             x264_param_default(ptr_param_);
-            if (0 != x264_param_default_preset(ptr_param_, "veryfast", "zerolatency"))
+            if (0 != x264_param_default_preset(ptr_param_, "medium", "zerolatency"))
                 return false;
 
+            int fps = in_cdc_ctx_->framerate.num / in_cdc_ctx_->framerate.den;
+
             ptr_param_->i_csp = X264_CSP_I420;
-            ptr_param_->i_width = X_FFMEPG_SCREEN_DST_WIDTH;
-            ptr_param_->i_height = X_FFMEPG_SCREEN_DST_HEIGHT;
-            ptr_param_->i_keyint_min = 1;
-            ptr_param_->i_keyint_max = 6;
+            ptr_param_->i_width = in_cdc_ctx_->width;
+            ptr_param_->i_height = in_cdc_ctx_->height;
+            ptr_param_->i_keyint_min = fps / 4;
+            ptr_param_->i_keyint_max = fps / 2;
 
             ptr_param_->i_fps_num = in_cdc_ctx_->framerate.num;
             ptr_param_->i_fps_den = in_cdc_ctx_->framerate.den;
@@ -117,8 +119,8 @@ namespace xM
                 in_cdc_ctx_->width,
                 in_cdc_ctx_->height,
                 in_cdc_ctx_->pix_fmt,
-                X_FFMEPG_SCREEN_DST_WIDTH,
-                X_FFMEPG_SCREEN_DST_HEIGHT,
+                ptr_param_->i_width,
+                ptr_param_->i_height,
                 AV_PIX_FMT_YUV420P,
                 SWS_FAST_BILINEAR,
                 NULL,
@@ -159,8 +161,8 @@ namespace xM
             AVFrame* sws_frame = av_frame_alloc();
 
             sws_frame->format = AV_PIX_FMT_YUV420P;
-            sws_frame->width = X_FFMEPG_SCREEN_DST_WIDTH;
-            sws_frame->height = X_FFMEPG_SCREEN_DST_HEIGHT;
+            sws_frame->width = ptr_param_->i_width;
+            sws_frame->height = ptr_param_->i_height;
             av_frame_get_buffer(sws_frame, 0);
 
             while (run_flag_)
@@ -232,7 +234,7 @@ namespace xM
             if (false == init_h264_encode())
                 return false;
 
-            //event_->HeaderInfo(out_cdc_ctx_->width, out_cdc_ctx_->height);
+            event_->HeaderInfo(ptr_param_->i_width, ptr_param_->i_height);
 
 
             run_flag_ = true;

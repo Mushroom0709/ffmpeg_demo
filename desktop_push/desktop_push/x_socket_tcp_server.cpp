@@ -15,50 +15,31 @@ namespace xM
             Stop();
         }
 
-        PLINK_INFO TCPServer::find_link(SOCKET _link)
+        bool TCPServer::add_link(SOCKET _link)
         {
-            PLINK_INFO info = NULL;
-            std::lock_guard<std::mutex> auto_lock(links_lock_);
-            auto find_res = links_.find(_link);
-            if (find_res != links_.end())
+            if (std::find(links_.begin(), links_.end(), _link) == links_.end())
             {
-                info = find_res->second;
+                links_.push_back(_link);
+                return true;
             }
-            return info;
+            return false;
         }
-        PLINK_INFO TCPServer::del_link(SOCKET _link)
+        bool TCPServer::del_link(SOCKET _link)
         {
-            PLINK_INFO info = NULL;
-            std::lock_guard<std::mutex> auto_lock(links_lock_);
-            auto find_res = links_.find(_link);
-            if (find_res != links_.end())
+            std::vector<SOCKET>::iterator res = std::find(links_.begin(), links_.end(), _link);
+            if (res != links_.end())
             {
-                info = find_res->second;
-                links_.erase(find_res);
+                close_socket(*res);
+                links_.erase(res);
             }
-            return info;
-        }
-        void TCPServer::del_link(PLINK_INFO _info)
-        {
-            PLINK_INFO info = NULL;
-            std::lock_guard<std::mutex> auto_lock(links_lock_);
-            if (links_.find(_info->ID) != links_.end())
-            {
-                links_.erase(_info->ID);
-            }
-        }
-        void TCPServer::add_link(PLINK_INFO _ptr_link)
-        {
-            std::lock_guard<std::mutex> auto_lock(links_lock_);
-            links_.insert(PSocketInfoType(_ptr_link->ID, _ptr_link));
+            return true;
         }
 
-        void TCPServer::close_socket(SOCKET& _sock)
+        void TCPServer::close_socket(SOCKET _sock)
         {
             if (_sock != INVALID_SOCKET)
             {
                 ::closesocket(_sock);
-                _sock = INVALID_SOCKET;
             }
         }
         bool TCPServer::initialization(const char* _ip, const int _port)
@@ -113,43 +94,25 @@ namespace xM
                 return false;
             }
 
-            PLINK_INFO info = (PLINK_INFO)calloc(1, sizeof(LINK_INFO));
-            info->ID = stemp;
+            event_->Connected(stemp);
 
-            info->Params = event_->Connected(info->ID);
-
-            add_link(info);
-
-            return true;
+            return add_link(stemp);
         }
         bool TCPServer::recv_function(SOCKET _sock, char* _buffer, int _buf_size)
         {
-            PLINK_INFO info = find_link(_sock);
-
-            if (info != NULL)
+            int res = recv(_sock, _buffer, _buf_size, 0);
+            if (res <= 0)
             {
-                int res = recv(_sock, _buffer, _buf_size, 0);
-                if (res <= 0)
-                {
-                    del_link(info);
-
-                    if (info != NULL)
-                    {
-                        if (res == 0)
-                            event_->DisConnected(info->ID, info->Params, 0);
-                        else
-                            event_->DisConnected(info->ID, info->Params, GetLastError());
-                    }
-
-                    close_socket(info->ID);
-                    info->Params = NULL;
-
-                    free(info);
-                }
+                if (res == 0)
+                    event_->DisConnected(_sock, 0);
                 else
-                {
-                    event_->Receive(info->ID, info->Params, (uint8_t*)_buffer, res);
-                }
+                    event_->DisConnected(_sock, GetLastError());
+
+                del_link(_sock);
+            }
+            else
+            {
+                event_->Receive(_sock, (uint8_t*)_buffer, res);
             }
 
             return true;
@@ -171,12 +134,10 @@ namespace xM
                 FD_ZERO(&read_set);
                 FD_SET(listen_, &read_set);
 
-                links_lock_.lock();
-                for (auto& item : links_)
+                for (auto item : links_)
                 {
-                    FD_SET(item.first, &read_set);
+                    FD_SET(item, &read_set);
                 }
-                links_lock_.unlock();
 
                 sel_ret = ::select(0, &read_set, NULL, NULL, &timeout);
                 if (sel_ret == SOCKET_ERROR)
@@ -210,17 +171,13 @@ namespace xM
 
                 }
             }
-
-            links_lock_.lock();
             close_socket(listen_);
-            for (auto& item : links_)
+            for (auto item : links_)
             {
-                close_socket(item.second->ID);
-                event_->DisConnected(item.second->ID, item.second->Params, 0);
-                free(item.second);
+                event_->DisConnected(item, 0);
+                close_socket(item);
             }
             links_.clear();
-            links_lock_.unlock();
         }
 
         bool TCPServer::send_bytes(SOCKET _sock, uint8_t* _data, int _len)
@@ -248,28 +205,6 @@ namespace xM
                 close_socket(_sock);
                 return false;
             }
-            return true;
-        }
-        bool TCPServer::SendAll(uint8_t* _data, int _len)
-        {
-            if (run_flag_ == false)
-                return false;
-
-            std::vector<SOCKET> temp_info;
-
-            links_lock_.lock();
-            for (auto& item : links_)
-            {
-                temp_info.push_back(item.first);
-            }
-            links_lock_.unlock();
-
-            for (auto& item : temp_info)
-            {
-                if (false == Send(item, _data, _len))
-                    return false;
-            }
-
             return true;
         }
 

@@ -18,8 +18,10 @@ namespace xM
 			static const uint32_t ID = 0x00001001;
 		public:
 			static const uint16_t XM_CONTROL_COMMAND_NONE = 0x1000;
-			static const uint16_t XM_CONTROL_COMMAND_START_PUSH = 0x1001;
-			static const uint16_t XM_CONTROL_COMMAND_STOP_PUSH = 0x1002;
+			static const uint16_t XM_CONTROL_COMMAND_START_PUSH = 0x1001;		//开始推流
+			static const uint16_t XM_CONTROL_COMMAND_STOP_PUSH = 0x1002;		//停止推流
+			static const uint16_t XM_CONTROL_COMMAND_REQ_SCREEN_SIZE = 0x2001;	//请求流视频尺寸
+			static const uint16_t XM_CONTROL_COMMAND_RSP_SCREEN_SIZE = 0x2002;	//返回流视频尺寸
 		public:
 			uint16_t Command;
 			uint16_t InfoLength;
@@ -43,7 +45,7 @@ namespace xM
 			}
 
 			template<class Communication = ICommunication>
-			bool Encode(Communication* _sock)
+			bool Encode(Communication* _sock, uint32_t _id, bool _all_flag)
 			{
 				int len = 0;
 				int offset = 0;
@@ -57,10 +59,14 @@ namespace xM
 					return false;
 				len += offset;
 
-				if (false == _sock->ProtocolSend(buffer, len))
+				if (_all_flag == true && false == _sock->ProtocolSendAll(buffer, len))
+					return false;
+				else if (_all_flag == false && false == _sock->ProtocolSend(_id, buffer, len))
 					return false;
 
-				if (false == _sock->ProtocolSend(Info, InfoLength))
+				if (_all_flag == true && false == _sock->ProtocolSendAll(Info, InfoLength))
+					return false;
+				else if (_all_flag == false && false == _sock->ProtocolSend(_id, Info, InfoLength))
 					return false;
 
 				return true;

@@ -48,12 +48,34 @@ WorkCenter::WorkCenter() :
     s_render = NULL;
     s_txture = NULL;
     memset(&s_rect_, 0, sizeof(SDL_Rect));
+
+    screen_width_ = -1;
+    screen_height_ = -1;
 }
 WorkCenter::~WorkCenter()
 {
     Stop();
 }
 
+void WorkCenter::process_control_msg(uint32_t _socket, xM::message::ControlMsg& _msg)
+{
+    switch (_msg.Command)
+    {
+    case xM::message::ControlMsg::XM_CONTROL_COMMAND_RSP_SCREEN_SIZE:
+    {
+        int temp = 0;
+        xM::message::Serialize::BytesConvertToInteger<int32_t>(temp, _msg.Info);
+        screen_width_ = temp;
+
+        xM::message::Serialize::BytesConvertToInteger<int32_t>(temp, _msg.Info + 4);
+        screen_height_ = temp;
+    }
+    break;
+
+    default:
+        break;
+    }
+}
 void WorkCenter::Package(uint32_t _socket, uint32_t _msg_id, uint8_t* _buffer, size_t _length)
 {
     switch (_msg_id)
@@ -64,6 +86,10 @@ void WorkCenter::Package(uint32_t _socket, uint32_t _msg_id, uint8_t* _buffer, s
         if (false == msg.Decode(_buffer, _length))
         {
             PrintError("xM::message::ControlMsg decode fail");
+        }
+        else
+        {
+            process_control_msg(_socket, msg.Msg);
         }
     }
     break;
@@ -99,6 +125,11 @@ void WorkCenter::Frame(AVFrame* _frame)
     SDL_RenderPresent(s_render);
 }
 
+bool WorkCenter::ProtocolSendAll(const uint8_t* _buf, const int _len)
+{
+    return client_.Send((const char*)_buf, _len);
+}
+
 void WorkCenter::Connected()
 {
 
@@ -112,15 +143,68 @@ void WorkCenter::Receive(uint8_t* _data, int _len)
     unpacker_.UpdateBuffer(0, _data, _len);
 }
 
-bool WorkCenter::Start()
+bool WorkCenter::req_screen_size()
+{
+    uint8_t buffer[32] = { 0 };
+    sprintf_s((char*)buffer, 32,"%lld", time(NULL));
+    xM::message::Protocol<WorkCenter, xM::message::ControlMsg> msg;
+    msg.Msg.Command = xM::message::ControlMsg::XM_CONTROL_COMMAND_REQ_SCREEN_SIZE;
+    msg.Msg.InfoLength = strlen((char*)buffer) + 1;
+    msg.Msg.Info = buffer;
+
+    if (false == msg.Encode(this))
+    {
+        PrintError("xM::message::ControlMsg Encode fail");
+        return false;
+    }
+
+    int cnt = 0;
+    while (cnt <= 10)
+    {
+        if (screen_height_ != -1 && screen_width_ != -1)
+        {
+            return true;
+        }
+
+        cnt++;
+        std::this_thread::sleep_for(std::chrono::milliseconds(100));
+    }
+
+    return false;
+}
+bool WorkCenter::req_push_stream()
+{
+    uint8_t buffer[32] = { 0 };
+    sprintf_s((char*)buffer, 32, "%lld", time(NULL));
+    xM::message::Protocol<WorkCenter, xM::message::ControlMsg> msg;
+    msg.Msg.Command = xM::message::ControlMsg::XM_CONTROL_COMMAND_START_PUSH;
+    msg.Msg.InfoLength = strlen((char*)buffer) + 1;
+    msg.Msg.Info = buffer;
+
+    if (false == msg.Encode(this))
+    {
+        PrintError("xM::message::ControlMsg Encode fail");
+        return false;
+    }
+
+    return true;
+}
+
+bool WorkCenter::Start(const char* _ip, const int _port)
 {
     if (false == init_sdl2())
         return false;
 
-    if (false == decoder_.Open(this))
+    if (false == client_.Connect(this, _ip, _port))
         return false;
 
-    if (false == client_.Connect(this, "127.0.0.2", 50510))
+    if (false == req_screen_size())
+        return false;
+
+    if (false == decoder_.Open(this,screen_width_,screen_height_))
+        return false;
+
+    if (false == req_push_stream())
         return false;
 
     return true;

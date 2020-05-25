@@ -9,9 +9,6 @@
 #define X_FFMPEG_VDECODER_DST_WIDTH 1280
 #define X_FFMPEG_VDECODER_DST_HEIGHT 800
 
-#define X_FFMEPG_SCREEN_DST_WIDTH 1920
-#define X_FFMEPG_SCREEN_DST_HEIGHT 1200
-
 namespace xM
 {
     namespace ffmpeg
@@ -25,6 +22,8 @@ namespace xM
 		class VDecoder
 		{
 		private:
+			int src_width_;
+			int src_height_;
 			IVDecoderEvent* event_;
 			AVCodecContext* cdc_ctx_;
 			SwsContext* sws_ctx_;
@@ -44,7 +43,7 @@ namespace xM
 			bool init_sws(int _srcW, int _srcH, AVPixelFormat _srcFormat,
 				          int _dstW, int _dstH, AVPixelFormat _dstFormat);
 		public:
-			bool Open(IVDecoderEvent* _event);
+			bool Open(IVDecoderEvent* _event, int _src_w, int _src_h);
 			bool UpdataPacket(AVPacket* _pkt);
 			bool UpdataBuffer(const uint8_t* _buf, const int _len);
 			void Close();

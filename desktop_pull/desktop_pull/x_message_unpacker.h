@@ -126,7 +126,6 @@ namespace xM
 
                     case 4: //µÈ´ý²Ù×÷£¬Çå¿Õ
                     {
-                        
                         if (0 != Serialize::BytesConvertToInteger<uint32_t>(u32_value_, &cache_[6]) && event_ != NULL)
                         {
                             event_->Package(_id, u32_value_, &cache_[0], msg_len_);
