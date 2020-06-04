@@ -195,6 +195,9 @@ bool xPlayer::open_ffmepg(const char* _inpu)
     if (false == adec_.SetSwr(ch_layout, AVSampleFormat::AV_SAMPLE_FMT_S16, _sample_rate))
         return false;
 
+    //if (false == adec_.SetSwr(ch_layout, AVSampleFormat::AV_SAMPLE_FMT_S16, 22050))
+    //    return false;
+
     if (false == adec_.Start(this))
         return false;
 

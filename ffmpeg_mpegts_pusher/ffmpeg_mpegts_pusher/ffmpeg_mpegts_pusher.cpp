@@ -9,11 +9,11 @@ int main()
     avformat_network_init();
     avdevice_register_all();
 
-    //if (false == input.OpenFile("../../test_video/失眠飞行.mp4", true))
-    //    return -1;
-
-    if (false == input.OpenScreen(true))
+    if (false == input.OpenFile("../../test_video/失眠飞行.mp4", true))
         return -1;
+
+    //if (false == input.OpenScreen(true))
+    //    return -1;
 
 
     if (false == output.Initialization("udp://239.0.0.1:50101"))

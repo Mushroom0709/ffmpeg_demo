@@ -7,6 +7,10 @@ xOutputStream::xOutputStream()
     clock_stream_index_ = -1;
     last_pts_ = -1.0;
     last_update_time_ = -1.0;
+
+    frame_pts_ = 0;
+    pkt_pts_ = 0;
+    pkt_dts_ = 0;
 }
 
 xOutputStream::~xOutputStream()
@@ -134,31 +138,11 @@ bool xOutputStream::create_stream(xInStreamInfo& _in_info, xOutStreamInfo& _out_
     case AVMEDIA_TYPE_AUDIO:
     {
         _out_info.CodecCtx->sample_fmt = _out_info.Codec->sample_fmts ? _out_info.Codec->sample_fmts[0] : AV_SAMPLE_FMT_FLTP;
-        //_cdc_ctx->bit_rate = 64000;
         _out_info.CodecCtx->sample_rate = _in_info.CodecCtx->sample_rate;
-        //_out_info.CodecCtx->sample_rate = 22050;
-        //if (_out_info.Codec->supported_samplerates)
-        //{
-        //    _out_info.CodecCtx->sample_rate = _out_info.Codec->supported_samplerates[0];
-        //    for (int i = 0; _out_info.Codec->supported_samplerates[i]; i++)
-        //    {
-        //        if (_out_info.Codec->supported_samplerates[i] == 22050)
-        //            _out_info.CodecCtx->sample_rate = 22050;
-        //    }
-        //}
         _out_info.CodecCtx->channel_layout = AV_CH_LAYOUT_STEREO;
-        //if (_out_info.Codec->channel_layouts)
-        //{
-        //    _out_info.CodecCtx->channel_layout = _out_info.Codec->channel_layouts[0];
-        //    for (int i = 0; _out_info.Codec->channel_layouts[i]; i++)
-        //    {
-        //        if (_out_info.Codec->channel_layouts[i] == AV_CH_LAYOUT_STEREO)
-        //            _out_info.CodecCtx->channel_layout = AV_CH_LAYOUT_STEREO;
-        //    }
-        //}
         _out_info.CodecCtx->channels = av_get_channel_layout_nb_channels(_out_info.CodecCtx->channel_layout);
         _out_info.CodecCtx->time_base = { 1, _out_info.CodecCtx->sample_rate };
-        //_out_info.Stream->time_base = _out_info.CodecCtx->time_base;
+        _out_info.Stream->time_base = _out_info.CodecCtx->time_base;
         _out_info.CodecCtx->strict_std_compliance = FF_COMPLIANCE_EXPERIMENTAL;
     }
 
@@ -382,9 +366,10 @@ bool xOutputStream::WriteFrame(xInStreamInfo& _in_info)
             ret = swr_convert(out_info.SwrCtx,
                 (uint8_t **)&out_info.Frame->data[0], out_info.Frame->nb_samples,
                 (const uint8_t**)&_in_info.Frame->data[0], _in_info.Frame->nb_samples);
-            
 
-            out_info.Frame->pts = av_rescale_q(_in_info.Frame->best_effort_timestamp, _in_info.CodecCtx->time_base, out_info.CodecCtx->time_base);
+
+            out_info.Frame->pts = _in_info.Frame->pts;
+            out_info.Frame->pkt_dts = _in_info.Frame->pkt_dts;
 
             ret = avcodec_send_frame(out_info.CodecCtx, out_info.Frame);
             if (ret < 0)
@@ -395,8 +380,17 @@ bool xOutputStream::WriteFrame(xInStreamInfo& _in_info)
             got_packet = avcodec_receive_packet(out_info.CodecCtx, out_pkt);
             if (got_packet == 0)
             {
-                av_packet_rescale_ts(out_pkt, _in_info.Stream->time_base, out_info.Stream->time_base);
                 out_pkt->stream_index = out_info.StreamIndex;
+
+                out_pkt->dts = av_rescale_q_rnd(out_pkt->dts, 
+                    out_info.CodecCtx->time_base, out_info.Stream->time_base, 
+                    (AVRounding)(AV_ROUND_NEAR_INF | AV_ROUND_PASS_MINMAX));
+                out_pkt->pts = av_rescale_q_rnd(out_pkt->pts,
+                    out_info.CodecCtx->time_base, out_info.Stream->time_base,
+                    (AVRounding)(AV_ROUND_NEAR_INF | AV_ROUND_PASS_MINMAX));
+                out_pkt->duration = av_rescale_q_rnd(out_pkt->duration,
+                    out_info.CodecCtx->time_base, out_info.Stream->time_base,
+                    (AVRounding)(AV_ROUND_NEAR_INF | AV_ROUND_PASS_MINMAX));
 
                 if (out_info.StreamIndex == clock_stream_index_)
                 {
@@ -408,10 +402,8 @@ bool xOutputStream::WriteFrame(xInStreamInfo& _in_info)
                     {
                         double dpts = out_pkt->pts * av_q2d(out_info.Stream->time_base);
                         double theory_wait = dpts - last_pts_;
-
                         double now_time = av_gettime_relative() / (AV_TIME_BASE * 1.0);
                         double fact_wait = now_time - last_update_time_;
-
                         double delay = (theory_wait - fact_wait);
                         last_pts_ = dpts;
                         if (delay > MIN_SLEEP_TIME_D_MICROSECOND)

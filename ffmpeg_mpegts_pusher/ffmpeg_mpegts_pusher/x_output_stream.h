@@ -6,6 +6,10 @@
 class xOutputStream
 {
 private:
+    int64_t frame_pts_;
+    int64_t pkt_pts_;
+    int64_t pkt_dts_;
+private:
     std::string url_;
     AVFormatContext* fmt_ctx_;
     std::map<int, xOutStreamInfo> streams_;
