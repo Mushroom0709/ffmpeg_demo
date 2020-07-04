@@ -19,7 +19,7 @@
         ![延迟测试](http://huahua.qn.xlvfan.com/ffmpeg_demo_desktop_stream.png)
 
 3.  图片相关
-    1.  [多小图生成单大图片](https://github.com/Mushroom0709/ffmpeg_demo/tree/master/ffmpeg_mpegts_pusher)
+    1.  [多小图生成单大图片](https://github.com/Mushroom0709/ffmpeg_demo/tree/master/matrix_images_tool)
         多小图生成单大图片
 
 3.  教程
