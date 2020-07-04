@@ -3,6 +3,9 @@
 *.VC.db
 *.log
 *.tlog
+*.jpg
 .vs
+x64
+\matrix_images_tool\matrix_images_tool\thubm
 Debug
 Release
