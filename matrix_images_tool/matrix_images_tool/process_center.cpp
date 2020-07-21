@@ -83,13 +83,13 @@ bool ProcessCenter::add_to_database_and_save_to_file(cv::Mat& _image, std::strin
 
     return true;
 }
-bool ProcessCenter::select_thumb_of_use_flag(int _channel_1, int _channel_2, int _channel_3, int _flag, int& _id, std::string& _path)
+bool ProcessCenter::select_thumb_of_use_flag(int _channel_1, int _channel_2, int _channel_3, int& _id, std::string& _path, int& _flag)
 {
     char sql_str[256] = { 0 };
     sprintf_s(sql_str, 256,
-        "SELECT id,img_path FROM image_info WHERE (used_flag = %d) "
+        "SELECT id,img_path,used_flag FROM image_info WHERE (used_flag = %d) "
         "ORDER BY "
-        "(ABS(%d - channel_key_1) + ABS(%d - channel_key_2) + ABS(%d - channel_key_3)) "
+        "used_flag, (ABS(%d - channel_key_1) + ABS(%d - channel_key_2) + ABS(%d - channel_key_3)) "
         "ASC LIMIT 1;",
         _flag,
         _channel_1, _channel_2, _channel_3);
@@ -103,6 +103,7 @@ bool ProcessCenter::select_thumb_of_use_flag(int _channel_1, int _channel_2, int
 
     _id = atoi(db_res[XM_DB_SQLITYE3_RESULT_ROW_FRIST_INDEX][0].c_str());
     _path = db_res[XM_DB_SQLITYE3_RESULT_ROW_FRIST_INDEX][1];
+    _flag = atoi(db_res[XM_DB_SQLITYE3_RESULT_ROW_FRIST_INDEX][2].c_str());
 
     return true;
 }
@@ -133,7 +134,7 @@ bool ProcessCenter::select_thumb_of_offset(int _channel_1, int _channel_2, int _
 
     return true;
 }
-bool ProcessCenter::select_thumb(int _channel_1, int _channel_2, int _channel_3, int& _id, std::string& _path)
+bool ProcessCenter::select_thumb(int _channel_1, int _channel_2, int _channel_3,int& _id, std::string& _path, int use_flag)
 {
     bool flag = true;
 
@@ -144,10 +145,7 @@ bool ProcessCenter::select_thumb(int _channel_1, int _channel_2, int _channel_3,
     //	flag = !select_thumb_of_offset(_channel_1, _channel_2, _channel_3, 60, 1, _id, _path);
 
     if (flag == true)
-        flag = !select_thumb_of_use_flag(_channel_1, _channel_2, _channel_3, 0, _id, _path);
-
-    if (flag == true)
-        flag = !select_thumb_of_use_flag(_channel_1, _channel_2, _channel_3, 1, _id, _path);
+        flag = !select_thumb_of_use_flag(_channel_1, _channel_2, _channel_3, _id, _path, use_flag);
 
     return !flag;
 }
@@ -355,6 +353,7 @@ bool ProcessCenter::MakeThumbMatrix(const char* _src_img_root, const char* _dst_
 
     std::string file_path;
     int thbumb_id = 0;
+    int used_flag = 0;
 
     set_thumb_use_flag(0, 0, true);
 
@@ -371,7 +370,8 @@ bool ProcessCenter::MakeThumbMatrix(const char* _src_img_root, const char* _dst_
                 resize_img.at<cv::Vec3b>(i, j)[1],
                 resize_img.at<cv::Vec3b>(i, j)[2],
                 thbumb_id,
-                file_path
+                file_path,
+                used_flag
             ))
             {
                 xErrorPrintln("[ProcessCenter] [MakeThumbMatrix][select thubm fail:%d,%d,%d]",
@@ -381,7 +381,7 @@ bool ProcessCenter::MakeThumbMatrix(const char* _src_img_root, const char* _dst_
                 return false;
             }
 
-            set_thumb_use_flag(thbumb_id, 1);
+            set_thumb_use_flag(thbumb_id, used_flag + 1);
 
             cv::Mat thumb = cv::imread(file_path, cv::IMREAD_COLOR);
             if (thumb.empty())

@@ -25,9 +25,9 @@ private:
 	bool add_to_database(cv::Mat& _image, std::string& _md5_str, std::string _path);
 	bool clear_database();
 	bool add_to_database_and_save_to_file(cv::Mat& _image, std::string& _md5_str, std::string _path);
-	bool select_thumb_of_use_flag(int _channel_1, int _channel_2, int _channel_3, int _flag, int& _id, std::string& _path);
+	bool select_thumb_of_use_flag(int _channel_1, int _channel_2, int _channel_3, int& _id, std::string& _path, int& _flag);
 	bool select_thumb_of_offset(int _channel_1, int _channel_2, int _channel_3, int _offset, int use_flag, int& _id, std::string& _path);
-	bool select_thumb(int _channel_1, int _channel_2, int _channel_3, int& _id, std::string& _path);
+	bool select_thumb(int _channel_1, int _channel_2, int _channel_3, int& _id, std::string& _path, int use_flag);
 	bool set_thumb_use_flag(int _id, int _flag, bool _all = false);
 	bool init_database();
 	bool init_directory();
