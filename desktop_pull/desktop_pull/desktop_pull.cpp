@@ -2,6 +2,8 @@
 
 int main(int _argc, char* _argv[])
 {
+    SetProcessDPIAware(); //解决windows 缩放问题
+
     WorkCenter work;
 
     char* ip = (char *)"127.0.0.2";

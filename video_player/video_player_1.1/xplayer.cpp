@@ -178,11 +178,11 @@ bool xPlayer::open_ffmepg(const char* _inpu)
 
     vdec_.GetSrcParameters(w, h, fmt);
 
-    //if (false == vdec_.SetSws(w, h, fmt))
-    //    return false;
-
-    if (false == vdec_.SetSws(1280, 720, fmt))
+    if (false == vdec_.SetSws(w, h, fmt))
         return false;
+
+    //if (false == vdec_.SetSws(1280, 720, fmt))
+    //    return false;
 
     if (false == vdec_.Start(this))
         return false;
