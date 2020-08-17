@@ -20,7 +20,7 @@ int main()
 
     //1.jpg
 
-    if (true == center.MakeThumbMatrix("C:\\Users\\xMushroom\\Desktop\\1.png", ".\\jb-test.jpg", 150, -1, 60))
+    if (true == center.MakeThumbMatrix("C:\\Users\\xMushroom\\Desktop\\1.jpg", ".\\1.jpg", 80, -1, 180))
         return -1;
 
     return 0;
