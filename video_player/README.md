@@ -6,19 +6,19 @@
 + 基于VS2019 FFmpeg4.2.2 SDL-2.0.10 x86开发。(如果配置项目有困难请完整项目下载f5即可一键启动。)
 
 ### 其他版本
-+ 控制台(Windows console) [点击下载项目](http://huahua.qn.xlvfan.com/ffmpeg_video_player_console_project.rar)
++ 控制台(Windows console) [点击下载项目](http://wp.space.xiangxiang.love/ffmpeg_video_player_console_project.rar)
 
 ### 视频演示
-+ [SDL2显示 单击查看视频](http://huahua.qn.xlvfan.com/ffmpeg_paly_video_file_show.mp4)
-+ [控制台(Windows console)显示 单击查看视频](http://huahua.qn.xlvfan.com/ffmpeg_video_player_console_show.mp4)
++ [SDL2显示 单击查看视频](http://wp.space.xiangxiang.love/ffmpeg_paly_video_file_show.mp4)
++ [控制台(Windows console)显示 单击查看视频](http://wp.space.xiangxiang.love/ffmpeg_video_player_console_show.mp4)
 
 ### 技术说明
 + FFmepg解码流程图
-    ![FFmepg解码流程图](http://huahua.qn.xlvfan.com/ffmpeg_paly_video_file_ffmepg%E8%A7%A3%E7%A0%81%E6%B5%81%E7%A8%8B.png)
+    ![FFmepg解码流程图](http://wp.space.xiangxiang.love/ffmpeg_paly_video_file_ffmepg%E8%A7%A3%E7%A0%81%E6%B5%81%E7%A8%8B.png)
 
 + 代码逻辑图
-    [点击查看大图](http://huahua.qn.xlvfan.com/ffmepg_video_player_file_ffmpeg_paly_video_file_%E4%BB%A3%E7%A0%81%E9%80%BB%E8%BE%91%E5%9B%BE_2.jpg)
-    ![代码逻辑图](http://huahua.qn.xlvfan.com/ffmepg_video_player_file_ffmpeg_paly_video_file_%E4%BB%A3%E7%A0%81%E9%80%BB%E8%BE%91%E5%9B%BE_2.jpg)
+    [点击查看大图](http://wp.space.xiangxiang.love/ffmepg_video_player_file_ffmpeg_paly_video_file_%E4%BB%A3%E7%A0%81%E9%80%BB%E8%BE%91%E5%9B%BE_2.jpg)
+    ![代码逻辑图](http://wp.space.xiangxiang.love/ffmepg_video_player_file_ffmpeg_paly_video_file_%E4%BB%A3%E7%A0%81%E9%80%BB%E8%BE%91%E5%9B%BE_2.jpg)
   
 + 音视频同步算法
   ```
