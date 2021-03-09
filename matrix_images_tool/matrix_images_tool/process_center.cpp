@@ -10,6 +10,18 @@ ProcessCenter::~ProcessCenter()
     db_.Close();
 }
 
+bool ProcessCenter::load_logo(cv::Mat& _dst,std::string _path, int _squart)
+{
+    cv::Mat lg = cv::imread(_path);
+    if (lg.empty() == true)
+    {
+        return false;
+    }
+    int dst_cols = static_cast<int>(_squart * 0.40f);
+    int dst_rows = static_cast<int>((dst_cols * 1.0f / lg.cols * 1.0f) * lg.rows);
+    cv::resize(lg, _dst, cv::Size2i(dst_cols, dst_rows));
+    return true;
+}
 time_t ProcessCenter::get_current_system_time()
 {
     return std::chrono::system_clock::to_time_t(std::chrono::system_clock::now());
@@ -89,7 +101,7 @@ bool ProcessCenter::select_thumb_of_use_flag(int _channel_1, int _channel_2, int
     sprintf_s(sql_str, 256,
         "SELECT id,img_path,used_flag FROM image_info WHERE (used_flag = %d) "
         "ORDER BY "
-        "used_flag, (ABS(%d - channel_key_1) + ABS(%d - channel_key_2) + ABS(%d - channel_key_3)) "
+        "used_flag ASC, (ABS(%d - channel_key_1) + ABS(%d - channel_key_2) + ABS(%d - channel_key_3)) "
         "ASC LIMIT 1;",
         _flag,
         _channel_1, _channel_2, _channel_3);
@@ -321,8 +333,14 @@ bool ProcessCenter::ReLoadingImageLibraryChannel()
 bool ProcessCenter::MakeThumbMatrix(const char* _src_img_root, const char* _dst_file_name,
     int _matrix_w,
     int _matrix_h,
-    int _squart)
+    int _squart,
+    std::string _logo)
 {
+    cv::Mat lg;
+    cv::Mat mlg;
+    if (load_logo(lg, _logo, _squart) == false)
+        return false;
+
     cv::Mat src_img = cv::imread(_src_img_root, cv::IMREAD_COLOR);
     if (src_img.empty())
     {
@@ -397,6 +415,10 @@ bool ProcessCenter::MakeThumbMatrix(const char* _src_img_root, const char* _dst_
                 thumb = thumb_resize;
             }
 
+
+            cv::Mat thumb_roi = thumb(cv::Rect(0, 0, lg.cols, lg.rows));
+            cv::addWeighted(thumb_roi, 1.0, lg, 0.5, 0, thumb_roi);
+        
             //cv::Rect copy_rect(i * _squart, j * _squart, _squart, _squart);
             thumb.copyTo(dst_img(cv::Rect(j * _squart, i * _squart, _squart, _squart)));
 

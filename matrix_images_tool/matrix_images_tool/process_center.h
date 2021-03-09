@@ -20,6 +20,7 @@ public:
 	ProcessCenter();
 	~ProcessCenter();
 private:
+	bool load_logo(cv::Mat& _dst, std::string _path, int _squart);
 	time_t get_current_system_time();
 	bool check_database_for_the_image(const char* _md5_str);
 	bool add_to_database(cv::Mat& _image, std::string& _md5_str, std::string _path);
@@ -40,7 +41,8 @@ public:
 	bool MakeThumbMatrix(const char* _src_img_root, const char* _dst_file_name,
 		int _matrix_w = -1,
 		int _matrix_h = -1,
-		int _squart = PROCESS_CENTER_TARGET_SQUARE_IMAGE_DEFAULT_LENGTH);
+		int _squart = PROCESS_CENTER_TARGET_SQUARE_IMAGE_DEFAULT_LENGTH,
+		std::string _logo = "./logo.jpg");
 };
 
 #endif // !_PROCESS_CENTER_H_

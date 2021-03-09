@@ -16,7 +16,7 @@
         2.  [推流](https://github.com/Mushroom0709/ffmpeg_demo/tree/master/desktop_push)
         3.  [拉流](https://github.com/Mushroom0709/ffmpeg_demo/tree/master/desktop_pull)
 
-        ![延迟测试](http://huahua.qn.xlvfan.com/ffmpeg_demo_desktop_stream.png)
+        ![延迟测试](http://wp.space.xiangxiang.love/ffmpeg_demo_desktop_stream.png?e=1612433973&token=vcYigcUKqhYZA_RXIFvOLVCIplh2hnJHsQu_dOqJ:4MvXax75bohjIGtPPRHoMTyifps=)
 
 3.  图片相关
     1.  [多小图生成单大图片](https://github.com/Mushroom0709/ffmpeg_demo/tree/master/matrix_images_tool)

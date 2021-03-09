@@ -4,7 +4,7 @@ int main(int _argc, char* _argv[])
 {
     WorkCenter center;
 
-    char* ip = (char*)"127.0.0.2";
+    char* ip = (char*)"10.0.0.29";
     int port = 50510;
 
     if (_argc == 3)
