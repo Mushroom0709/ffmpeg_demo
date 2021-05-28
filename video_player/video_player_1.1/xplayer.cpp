@@ -144,7 +144,7 @@ void xPlayer::play_video_function()
 
             //printf("%I64d\n", delay);
 
-            SDL_RenderPresent(s_render);
+                
             av_sync_.SetVideoShowTime();
 
 
