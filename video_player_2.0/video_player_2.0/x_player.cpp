@@ -172,7 +172,7 @@ namespace xM
 	void xPlayer::work_function_read_data()
 	{
 		int cnt = 0;
-		while (run_flag_ && cnt < 5 && video_frames_.size() < 10)
+		while (run_flag_ && cnt < 5 && video_frames_.size() < 20)
 		{
 			if (true == demultiplexer_.GetPacket(packet_, media_type_, pkt_stream_index_, pkt_status_))
 			{
