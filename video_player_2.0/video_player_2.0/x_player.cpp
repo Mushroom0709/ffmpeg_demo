@@ -81,12 +81,12 @@ namespace xM
 
 		if (false == sdl_pixel_transcoder_.Initialize(
 			video_decoder_.format_, video_decoder_.height_, video_decoder_.width_,
-			AV_PIX_FMT_YUV420P, SDL_IMAGE_SIZE_HEIGHT, SDL_IMAGE_SIZE_WDITH))
+			AV_PIX_FMT_YUV420P, (int)(SDL_IMAGE_ZOOM_FACTOR * video_decoder_.height_), (int)(SDL_IMAGE_ZOOM_FACTOR * video_decoder_.width_)))
 			return false;
 
 		if (false == console_pixel_transcoder_.Initialize(
 			video_decoder_.format_, video_decoder_.height_, video_decoder_.width_,
-			AV_PIX_FMT_GRAY8, CONSOLE_IMAGE_SIZE_HEIGHT, CONSOLE_IMAGE_SIZE_WDITH))
+			AV_PIX_FMT_GRAY8, (int)(CONSOLE_IMAGE_ZOOM_FACTOR * video_decoder_.height_), (int)(CONSOLE_IMAGE_ZOOM_FACTOR * video_decoder_.width_)))
 			return false;
 
 		if (false == sample_transcoder_.Initialize(audio_decoder_.format_, audio_decoder_.ch_layout_, audio_decoder_.rate_, audio_decoder_.frame_size_,
@@ -107,7 +107,7 @@ namespace xM
 		sdl_window_ = SDL_CreateWindow(
 			"xMushroom",
 			SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED,
-			SDL_IMAGE_SIZE_WDITH, SDL_IMAGE_SIZE_HEIGHT,
+			sdl_pixel_transcoder_.dst_wdith_, sdl_pixel_transcoder_.dst_height_,
 			SDL_WINDOW_OPENGL | SDL_WINDOW_RESIZABLE);
 
 		if (sdl_window_ == NULL)
@@ -119,14 +119,14 @@ namespace xM
 
 		sdl_rect_.x = 0;
 		sdl_rect_.y = 0;
-		sdl_rect_.w = SDL_IMAGE_SIZE_WDITH;
-		sdl_rect_.h = SDL_IMAGE_SIZE_HEIGHT;
+		sdl_rect_.w = sdl_pixel_transcoder_.dst_wdith_;
+		sdl_rect_.h = sdl_pixel_transcoder_.dst_height_;
 
 		sdl_texture_ = SDL_CreateTexture(
 			sdl_renderer_,
 			SDL_PIXELFORMAT_IYUV,
 			SDL_TEXTUREACCESS_STREAMING,
-			SDL_IMAGE_SIZE_WDITH, SDL_IMAGE_SIZE_HEIGHT);
+			sdl_pixel_transcoder_.dst_wdith_, sdl_pixel_transcoder_.dst_height_);
 		if (sdl_texture_ == NULL)
 			return false;
 
@@ -157,8 +157,8 @@ namespace xM
 		font_info.dwFontSize.Y = font_size.Y;
 		font_info.FontFamily = TMPF_VECTOR;
 		font_info.FontWeight = 400;
-		size.X = 300;
-		size.Y = 150;
+		size.X = 350;
+		size.Y = 200;
 		size.X = size.X > GetSystemMetrics(SM_CXMIN) ? size.X : GetSystemMetrics(SM_CXMIN);
 		size.Y = size.Y > GetSystemMetrics(SM_CYMIN) ? size.Y : GetSystemMetrics(SM_CYMIN);
 

@@ -18,7 +18,7 @@ namespace x_ffmpeg
 		AVPixelFormat src_fmt_;
 		int src_height_;
 		int src_wdith_;
-
+	public:
 		AVPixelFormat dst_fmt_;
 		int dst_height_;
 		int dst_wdith_;

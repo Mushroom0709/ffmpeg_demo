@@ -18,11 +18,14 @@
 #include "x_ffmpeg_audio_video_synchronization.h"
 
 
-#define SDL_IMAGE_SIZE_WDITH 1280
-#define SDL_IMAGE_SIZE_HEIGHT 720
+//#define SDL_IMAGE_SIZE_WDITH 1280
+//#define SDL_IMAGE_SIZE_HEIGHT 720
 
-#define CONSOLE_IMAGE_SIZE_WDITH 158
-#define CONSOLE_IMAGE_SIZE_HEIGHT 85
+#define SDL_IMAGE_ZOOM_FACTOR 0.5
+#define CONSOLE_IMAGE_ZOOM_FACTOR 0.1
+
+//#define CONSOLE_IMAGE_SIZE_WDITH 158
+//#define CONSOLE_IMAGE_SIZE_HEIGHT 85
 
 
 namespace xM
